@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +13,7 @@ def build_dataset(event_count: int, seed: int = 42) -> list[dict[str, Any]]:
         raise ValueError("event_count must be at least 20")
 
     rng = random.Random(seed)
-    start = datetime(2026, 8, 1, 8, 0, tzinfo=UTC)
+    start = datetime(2026, 8, 1, 8, 0, tzinfo=timezone.utc)
     users = [f"user{index:03d}@example.org" for index in range(1, 101)]
     devices = [f"LAB-WS-{index:03d}" for index in range(1, 51)]
     events: list[dict[str, Any]] = []

@@ -4,7 +4,7 @@ import argparse
 import os
 import secrets
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from . import __version__
@@ -79,7 +79,7 @@ def analyze(args: argparse.Namespace) -> int:
     findings = run_detections(events, config)
     result = AnalysisResult(
         source_file=args.input.name,
-        generated_at=datetime.now(tz=UTC),
+        generated_at=datetime.now(tz=timezone.utc),
         events_processed=len(events),
         findings=findings,
         metadata={

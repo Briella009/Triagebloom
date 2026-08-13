@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -106,7 +106,7 @@ def _parse_timestamp(value: Any) -> datetime:
         seconds = float(value)
         if seconds > 10_000_000_000:
             seconds /= 1000
-        return datetime.fromtimestamp(seconds, tz=UTC)
+        return datetime.fromtimestamp(seconds, tz=timezone.utc)
 
     text = str(value).strip()
     if text.isdigit():
@@ -122,13 +122,13 @@ def _parse_timestamp(value: Any) -> datetime:
     for candidate in candidates:
         try:
             parsed = datetime.fromisoformat(candidate)
-            return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed.astimezone(UTC)
+            return parsed.replace(tzinfo=timezone.utc) if parsed.tzinfo is None else parsed.astimezone(timezone.utc)
         except ValueError:
             continue
 
     for pattern in ("%Y-%m-%d %H:%M:%S", "%Y/%m/%d %H:%M:%S", "%d/%m/%Y %H:%M:%S"):
         try:
-            return datetime.strptime(text, pattern).replace(tzinfo=UTC)
+            return datetime.strptime(text, pattern).replace(tzinfo=timezone.utc)
         except ValueError:
             continue
 
