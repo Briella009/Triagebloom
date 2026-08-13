@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use TriageBloom in training, research, or an evaluation, please cite the project."
+title: "TriageBloom"
+type: software
+authors:
+  - family-names: "Ezeobioha"
+    given-names: "Blessing"
+version: 0.1.0
+date-released: 2026-08-13
+license: MIT
+repository-code: "https://github.com/Briella009/triagebloom"

