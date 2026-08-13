@@ -1,0 +1,40 @@
+# Python temporary files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Test and coverage files
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# Generated TriageBloom reports
+reports/
+
+# Editor files
+.vscode/
+.idea/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
