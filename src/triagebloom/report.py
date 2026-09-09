@@ -21,23 +21,43 @@ def _pseudonym(value: str, salt: str) -> str:
 
 def _redacted_result(result: AnalysisResult, salt: str) -> dict[str, Any]:
     data = result.to_dict()
+    global_mapping: dict[str, str] = {}
+
     for finding in data["findings"]:
         entities = finding.get("entities", {})
-        mapping: dict[str, str] = {}
         for key, values in entities.items():
             if key not in SENSITIVE_ENTITY_KEYS:
                 continue
             redacted_values = []
             for value in values:
-                replacement = _pseudonym(str(value), salt)
-                mapping[str(value)] = replacement
+                original = str(value)
+                replacement = global_mapping.setdefault(original, _pseudonym(original, salt))
                 redacted_values.append(replacement)
             entities[key] = redacted_values
 
-        for original, replacement in mapping.items():
+    metadata = data.get("metadata", {})
+    configuration = metadata.get("configuration")
+    if isinstance(configuration, dict):
+        for key in ("allow_users", "allow_source_ips", "allow_devices"):
+            values = configuration.get(key)
+            if not isinstance(values, list):
+                continue
+            redacted_values = []
+            for value in values:
+                original = str(value)
+                replacement = global_mapping.setdefault(original, _pseudonym(original, salt))
+                redacted_values.append(replacement)
+            configuration[key] = redacted_values
+
+    for finding in data["findings"]:
+        for original, replacement in global_mapping.items():
             finding["summary"] = finding["summary"].replace(original, replacement)
             finding["why_it_triggered"] = [item.replace(original, replacement) for item in finding["why_it_triggered"]]
-    data["metadata"] = {**data.get("metadata", {}), "identifiers_redacted": True}
+
+    source_file = str(data.get("source_file", ""))
+    if source_file:
+        data["source_file"] = f"redacted-source-{hashlib.sha256(f'{salt}:{source_file}'.encode('utf-8')).hexdigest()[:10]}"
+    data["metadata"] = {**metadata, "identifiers_redacted": True}
     return data
 
 
@@ -47,12 +67,13 @@ def result_to_dict(result: AnalysisResult, redact: bool = False, salt: str | Non
     return _redacted_result(result, salt or secrets.token_hex(16))
 
 
+def render_json(result: AnalysisResult, redact: bool = False, salt: str | None = None) -> str:
+    return json.dumps(result_to_dict(result, redact=redact, salt=salt), indent=2, ensure_ascii=False)
+
+
 def write_json(result: AnalysisResult, destination: Path, redact: bool = False, salt: str | None = None) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(
-        json.dumps(result_to_dict(result, redact=redact, salt=salt), indent=2, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    destination.write_text(render_json(result, redact=redact, salt=salt), encoding="utf-8")
     return destination
 
 
@@ -60,9 +81,8 @@ def _pill(severity: str) -> str:
     return f'<span class="pill {html.escape(severity)}">{html.escape(severity.upper())}</span>'
 
 
-def write_html(result: AnalysisResult, destination: Path, redact: bool = False, salt: str | None = None) -> Path:
+def render_html(result: AnalysisResult, redact: bool = False, salt: str | None = None) -> str:
     data = result_to_dict(result, redact=redact, salt=salt)
-    destination.parent.mkdir(parents=True, exist_ok=True)
 
     severity_counts = Counter(item["severity"] for item in data["findings"])
     finding_rows: list[str] = []
@@ -111,6 +131,19 @@ def write_html(result: AnalysisResult, destination: Path, redact: bool = False, 
     table_body = "".join(finding_rows) or '<tr><td colspan="6">No findings were generated.</td></tr>'
     details = "".join(detail_sections) or "<p>No suspicious patterns matched the enabled rules.</p>"
     redaction_note = "Identifiers were pseudonymised in this report." if redact else "Identifiers are shown as present in the source data."
+    metadata = data.get("metadata", {})
+    processing_mode = str(metadata.get("processing_mode", "local"))
+    if processing_mode == "local":
+        processing_note = "Processing occurred locally on the analyst's computer."
+    else:
+        processing_note = (
+            "This report was generated through the TriageBloom web interface. If the interface is hosted, uploaded "
+            "content is processed by that hosting environment; do not upload confidential employer, client, or "
+            "production logs to a public deployment."
+        )
+    profile = str(metadata.get("profile", "not specified"))
+    source_products = ", ".join(str(item) for item in metadata.get("source_products", [])) or "not identified"
+    triggered_rules = ", ".join(str(item) for item in metadata.get("triggered_rules", [])) or "none"
 
     document = f"""<!doctype html>
 <html lang="en">
@@ -152,7 +185,8 @@ footer {{ color:var(--muted); font-size:.86rem; margin-top:38px; }}
   <p>Generated {html.escape(data["generated_at"])} from {html.escape(data["source_file"])}</p>
 </header>
 <main>
-  <div class="notice"><strong>Privacy:</strong> processing occurred locally. {html.escape(redaction_note)}</div>
+  <div class="notice"><strong>Privacy:</strong> {html.escape(processing_note)} {html.escape(redaction_note)}</div>
+  <div class="notice"><strong>Analysis context:</strong> profile {html.escape(profile)} | source products {html.escape(source_products)} | triggered rules {html.escape(triggered_rules)}</div>
   <div class="cards">
     <div class="card"><span>Events processed</span><strong>{data["events_processed"]}</strong></div>
     <div class="card"><span>Total findings</span><strong>{data["finding_count"]}</strong></div>
@@ -177,5 +211,10 @@ footer {{ color:var(--muted); font-size:.86rem; margin-top:38px; }}
 </body>
 </html>
 """
-    destination.write_text(document, encoding="utf-8")
+    return document
+
+
+def write_html(result: AnalysisResult, destination: Path, redact: bool = False, salt: str | None = None) -> Path:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(render_html(result, redact=redact, salt=salt), encoding="utf-8")
     return destination

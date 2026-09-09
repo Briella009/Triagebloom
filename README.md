@@ -1,43 +1,99 @@
 # TriageBloom
 
-**Explainable, local-first security log triage for small SOC teams, learners, and incident responders.**
+**Explainable security log triage with Microsoft security context, incident correlation, a privacy-aware web interface, and reproducible evaluation.**
 
-TriageBloom converts exported CSV or JSON security events into an analyst-ready HTML and JSON report. It normalises common vendor fields, detects suspicious authentication and process patterns, maps findings to MITRE ATT&CK, shows the exact evidence that triggered each rule, and recommends next investigation steps.
+TriageBloom converts exported CSV or JSON security events into analyst-ready HTML and JSON reports. It normalises common Microsoft Entra ID, Microsoft Defender, Windows, and generic fields, detects suspicious authentication and process behaviour, correlates related events into incident chains, maps findings to MITRE ATT&CK, and explains the evidence behind each rule.
 
-The core engine runs entirely on the analyst's computer and has no third-party Python dependencies.
+The core engine remains dependency-free and can run entirely on an analyst's computer. An optional Streamlit interface provides a browser workflow for demos and authorised non-confidential datasets.
 
-> Project status: early public alpha. Use it for learning, controlled pilots, and analyst assistance. Do not treat it as an autonomous incident-response system.
+> **Project status:** public alpha, version 0.2.0. Use it for learning, controlled pilots, research, and analyst assistance. Do not treat it as an autonomous incident-response system or a substitute for SIEM/EDR telemetry.
+
+## What changed in 0.2.0
+
+Version 0.2.0 combines the planned Microsoft-context and evaluation/correlation milestones into one substantial release.
+
+New capabilities include:
+
+- dedicated Microsoft Entra ID sign-in context
+- Microsoft Defender process-event normalisation
+- Microsoft Defender alert normalisation
+- Conditional Access, sign-in risk, authentication requirement, and MFA detail context
+- parent-process, file-name, and SHA256 context for endpoint events
+- MFA-fatigue detection followed by successful authentication
+- correlation of repeated failures -> successful sign-in -> suspicious endpoint execution
+- built-in `learner`, `balanced`, and `strict` rule profiles
+- JSON allow-lists and rule suppressions
+- labelled synthetic evaluation cases
+- precision, recall, F1, false-positive-rate, and accuracy calculation
+- expanded automated tests
+- 80% minimum CI coverage gate
+- Streamlit browser interface with in-memory uploads and downloadable HTML/JSON reports
+- Docker deployment option and hosted-interface privacy guardrails
 
 ## Why this project exists
 
-Full SIEM platforms are powerful, but they are not always available to students, small organisations, volunteer teams, or analysts reviewing exported evidence outside a production tenant. TriageBloom provides a lightweight bridge between raw exported logs and a structured investigation.
+Full SIEM and EDR platforms are powerful, but they are not always available to students, small organisations, volunteer teams, educators, or analysts reviewing exported evidence outside a production tenant. TriageBloom provides a lightweight bridge between raw exported events and a structured first-pass investigation.
 
-The project is designed around four principles:
+The project is designed around five principles:
 
-1. **Local-first privacy:** logs are processed locally; no API key or cloud upload is required.
-2. **Explainability:** each finding lists the threshold, evidence event IDs, affected entities, confidence, and next steps.
-3. **Learning value:** the report explains why a pattern matters instead of only labelling it malicious.
-4. **Low adoption cost:** the MVP uses the Python standard library and accepts common CSV/JSON exports.
+1. **Local-first core:** the CLI processes logs locally; no API key or cloud upload is required. The optional hosted web interface has a separate privacy boundary and must not be used for confidential logs.
+2. **Explainability:** findings include thresholds, evidence event IDs, affected entities, context, confidence, and next steps.
+3. **Microsoft-aware but vendor-neutral:** common Entra and Defender exports receive dedicated context while the internal model stays generic.
+4. **Analyst control:** thresholds, profiles, allow-lists, and suppressions are explicit and inspectable.
+5. **Reproducibility:** tests, synthetic fixtures, evaluation data, and benchmark scripts are included in the repository.
 
-## MVP features
+## Features
+
+### Input and normalisation
 
 - CSV, JSON, JSONL, and NDJSON ingestion
-- Field normalisation for common Microsoft Entra ID, Microsoft Defender, Windows, and generic log exports
-- Password-spray detection
-- Account brute-force detection
-- Successful sign-in after repeated failures
-- Suspicious PowerShell detection
-- Living-off-the-land binary detection
-- Configurable off-hours sign-in review
-- MITRE ATT&CK technique mapping
-- Transparent risk and confidence scoring
-- HTML and JSON reporting
-- Optional pseudonymisation of users, IP addresses, and devices
-- Synthetic demo data and automated tests
+- generic field aliases
+- Microsoft Entra ID adapter
+- Microsoft Defender process adapter
+- Microsoft Defender alert adapter
+- UTC timestamp normalisation
+
+### Authentication detections
+
+| Rule ID | Detection | Severity | MITRE ATT&CK |
+|---|---|---:|---|
+| `TB-AUTH-001` | Password spray across multiple users | High | T1110.003 |
+| `TB-AUTH-002` | Repeated failures against one account | High | T1110.001 |
+| `TB-AUTH-003` | Success after repeated failures | Critical | T1078 |
+| `TB-AUTH-004` | Successful sign-in outside configured UTC business hours | Low | T1078 |
+| `TB-AUTH-005` | MFA fatigue followed by successful authentication | Critical | T1621 |
+
+### Endpoint detections
+
+| Rule ID | Detection | Severity | MITRE ATT&CK |
+|---|---|---:|---|
+| `TB-PROC-001` | Suspicious PowerShell behaviour | High | T1059.001 |
+| `TB-PROC-002` | Potential living-off-the-land binary use | Medium | Technique varies |
+
+### Correlation
+
+| Rule ID | Detection | Severity | Mapping |
+|---|---|---:|---|
+| `TB-CORR-001` | Repeated auth failures -> successful sign-in -> suspicious process | Critical | T1078 + T1059.001 |
+
+## Browser interface
+
+Run the interface locally:
+
+```bash
+python -m pip install -e ".[ui]"
+streamlit run streamlit_app.py
+```
+
+The interface supports bundled synthetic demos and CSV/JSON/JSONL/NDJSON uploads, configurable detection profiles, prioritised findings, expandable evidence, and downloadable HTML/JSON reports. Identifier pseudonymisation is enabled by default for downloads.
+
+> **Hosted-data warning:** a public Streamlit deployment processes uploads in its hosting environment. Use it only with synthetic, redacted, or explicitly authorised non-confidential data. Use the CLI or a locally run Streamlit instance for sensitive investigations.
+
+Deployment details are in [`docs/STREAMLIT_DEPLOYMENT.md`](docs/STREAMLIT_DEPLOYMENT.md).
 
 ## Quick start
 
-### 1. Install from the repository
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/Briella009/triagebloom.git
@@ -61,94 +117,139 @@ Install:
 python -m pip install -e .
 ```
 
-### 2. Run the demo
+For development and coverage checks:
 
 ```bash
-triagebloom analyze sample_data/demo_events.json --output-dir reports
+python -m pip install -e ".[dev]"
 ```
 
-The command creates:
-
-- `reports/demo_events-triagebloom.html`
-- `reports/demo_events-triagebloom.json`
-
-Open the HTML file in a browser.
-
-### 3. Protect identifiers in a shareable report
+### 2. Run the combined incident demo
 
 ```bash
-triagebloom analyze sample_data/demo_events.json --output-dir reports --redact
+triagebloom analyze sample_data/combined_incident.json --output-dir reports --disable-off-hours
 ```
 
-For consistent pseudonyms across repeated runs, define a private salt before running:
+This should produce findings for:
+
+- successful authentication after repeated failures
+- suspicious PowerShell
+- correlated authentication-to-endpoint compromise chain
+
+### 3. Analyse Microsoft-style fixtures
 
 ```bash
-export TRIAGEBLOOM_REDACTION_SALT="use-a-long-private-random-value"
+triagebloom analyze sample_data/entra_signins.json --output-dir reports
+triagebloom analyze sample_data/defender_processes.json --output-dir reports
+triagebloom analyze sample_data/defender_alerts.json --output-dir reports
 ```
 
-On Windows PowerShell:
+### 4. Protect identifiers in a shareable report
+
+```bash
+triagebloom analyze sample_data/combined_incident.json --output-dir reports --redact
+```
+
+For stable pseudonyms across repeated runs, define a private salt:
 
 ```powershell
 $env:TRIAGEBLOOM_REDACTION_SALT = "use-a-long-private-random-value"
 ```
 
-## Detection catalogue
+## Rule profiles
 
-| Rule ID | Detection | Default severity | MITRE ATT&CK |
-|---|---|---:|---|
-| `TB-AUTH-001` | Password spray across multiple users | High | T1110.003 |
-| `TB-AUTH-002` | Repeated failures against one account | High | T1110.001 |
-| `TB-AUTH-003` | Success after repeated failures | Critical | T1078 |
-| `TB-AUTH-004` | Success outside configured UTC business hours | Low | T1078 |
-| `TB-PROC-001` | Suspicious PowerShell behaviour | High | T1059.001 |
-| `TB-PROC-002` | Potential living-off-the-land binary use | Medium | Technique varies |
-
-Thresholds are configurable from the command line. Run `triagebloom analyze --help` for the complete list.
-
-## Accepted fields
-
-TriageBloom automatically recognises common aliases. At minimum, each row needs a timestamp.
-
-| Canonical field | Example aliases |
-|---|---|
-| Timestamp | `timestamp`, `TimeGenerated`, `createdDateTime`, `@timestamp` |
-| Event type | `event_type`, `ActivityDisplayName`, `ActionType`, `OperationName` |
-| Outcome | `outcome`, `result`, `status`, `resultType` |
-| User | `user`, `UserPrincipalName`, `AccountName`, `Identity` |
-| Source IP | `source_ip`, `IPAddress`, `ClientIP`, `CallerIPAddress` |
-| Device | `device`, `DeviceName`, `Computer`, `HostName` |
-| Command line | `command_line`, `ProcessCommandLine`, `CommandLine` |
-
-Unknown extra fields remain in memory during analysis but are not written into the report.
-
-## Example command options
+Choose one of three profiles:
 
 ```bash
-triagebloom analyze logs/signins.csv \
-  --spray-users 6 \
-  --spray-window 15 \
-  --bruteforce-failures 10 \
-  --business-start 8 \
-  --business-end 18 \
-  --output-dir reports \
-  --redact
+triagebloom analyze logs.json --profile learner
+triagebloom analyze logs.json --profile balanced
+triagebloom analyze logs.json --profile strict
 ```
 
-## Synthetic data and repeatable benchmarks
+- `learner`: lower thresholds for demonstrations and education
+- `balanced`: default profile
+- `strict`: higher thresholds intended to reduce noise
 
-Generate a deterministic dataset without using real security logs:
+CLI options can override individual thresholds.
+
+## Allow-lists and suppressions
+
+Copy `config.example.json`, edit it, and run:
+
+```bash
+triagebloom analyze logs.json --config my-config.json --output-dir reports
+```
+
+Configuration supports:
+
+- allowed users
+- allowed source IPs
+- allowed devices
+- suppressed rule IDs
+- authentication thresholds
+- MFA threshold/window
+- correlation window
+- business hours
+
+See [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
+
+## Microsoft context
+
+TriageBloom preserves useful fields such as:
+
+- Conditional Access status
+- risk level and risk state
+- authentication requirement and method detail
+- app/resource/client-app context
+- parent or initiating process
+- file name and SHA256
+- Defender alert severity/category/source
+
+See [`docs/MICROSOFT_ADAPTERS.md`](docs/MICROSOFT_ADAPTERS.md).
+
+## Reproducible synthetic evaluation
+
+Run:
+
+```bash
+python scripts/evaluate_labelled.py
+```
+
+The committed evaluation uses eight synthetic cases across seven evaluated rules. The current synthetic case set produces:
+
+- precision: 1.0000
+- recall: 1.0000
+- F1 score: 1.0000
+- false-positive rate: 0.0000
+
+These values are **not real-world SOC accuracy claims**. The cases are deliberately constructed to verify rule behaviour. See [`docs/EVALUATION.md`](docs/EVALUATION.md) for methodology and limitations.
+
+## Automated tests and coverage
+
+Run:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+With the development dependency installed:
+
+```bash
+coverage run --source=src/triagebloom -m unittest discover -s tests -v
+coverage report --fail-under=80
+```
+
+The final v0.2.0 preparation snapshot passed 35 automated tests and reached 90% statement coverage across the core package.
+
+## Synthetic performance benchmark
+
+Generate and benchmark deterministic synthetic data:
 
 ```bash
 python scripts/generate_synthetic.py --events 10000 --output synthetic-events.json
-```
-
-Run a local benchmark:
-
-```bash
 python scripts/benchmark.py --events 10000 --repeat 5
 ```
 
-Any published benchmark should include the exact commit, Python version, operating system, processor, memory, event count, and command used.
+Always publish the machine specification, Python version, event count, exact commit, and command with any benchmark result.
 
 ## Architecture
 
@@ -156,48 +257,66 @@ Any published benchmark should include the exact commit, Python version, operati
 CSV / JSON export
         |
         v
-Field normalisation
+Source recognition + field normalisation
         |
         v
 Vendor-neutral event model
         |
         v
-Deterministic detection rules
+Deterministic detections
+        |
+        +--> Authentication findings
+        +--> Endpoint findings
+        +--> Cross-event incident correlation
         |
         v
-Risk + confidence + MITRE mapping
+Allow-list / suppression filtering
+        |
+        v
+Risk + confidence + MITRE context
         |
         v
 Explainable HTML / JSON report
 ```
 
-More detail is available in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+More detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+## Safe sample data
+
+The repository includes synthetic fixtures only. Do not commit real employer, client, patient, customer, or incident data. Sanitise identifiers before sharing screenshots or reports.
 
 ## Responsible use
 
-Analyse only data you own or are authorised to handle. TriageBloom does not scan remote systems, exploit vulnerabilities, block accounts, or execute response actions. Its output is advisory and can contain false positives or false negatives. Validate each finding with authoritative telemetry and organisational context.
+Analyse only data you own or are authorised to handle. TriageBloom does not scan remote systems, exploit vulnerabilities, disable accounts, delete files, or execute remediation actions. Findings can be false positives or false negatives and must be validated against authoritative telemetry and organisational context.
 
-Do not publish real client or employer logs. Use synthetic data, approved anonymised data, or redacted screenshots for demos and public documentation.
+## Current limitations
+
+- synthetic evaluation is not a substitute for external validation
+- no direct Microsoft Graph, Sentinel, or Defender API connection
+- no geolocation or reputation enrichment
+- correlation is intentionally deterministic and narrow
+- allow-lists can hide malicious activity if configured carelessly
+- upstream Defender alerts are normalised for context rather than duplicated as TriageBloom alerts
+
+## Technical references
+
+Microsoft schema references and MITRE ATT&CK mappings used by the project are listed in [`docs/REFERENCES.md`](docs/REFERENCES.md).
 
 ## Contributing
 
-Issues, detection ideas, sample schemas, tests, and documentation improvements are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
-
-A useful first contribution is a sanitised sample export and a mapping of its field names to the canonical event model.
+Issues, detection ideas, sanitised schema examples, tests, and documentation improvements are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
 
 ## Roadmap
 
-Near-term priorities include:
+The core 0.2.0 engineering milestone is complete. The next priority is **external validation** rather than feature accumulation:
 
-- Microsoft Sentinel analytics-rule export support
-- Entra ID sign-in risk and conditional-access context
-- MFA fatigue detection
-- Cross-file incident correlation
-- Sigma-rule import for community detections
-- Optional browser-based interface
-- Evaluation dataset and false-positive measurement
+- independent analyst review
+- controlled pilot with synthetic or authorised sanitised data
+- public or independently curated dataset evaluation where appropriate
+- documented feedback and reproducible results
+- stable 1.0 release after validation
 
-See [`ROADMAP.md`](ROADMAP.md) for milestones and acceptance criteria.
+See [`ROADMAP.md`](ROADMAP.md).
 
 ## Licence
 

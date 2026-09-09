@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import secrets
 import sys
@@ -8,7 +9,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from . import __version__
-from .detections import DetectionConfig, run_detections
+from .config import DetectionConfig, get_profile, load_config, validate_config
+from .detections import run_detections
 from .models import AnalysisResult
 from .normalize import InputFormatError, load_events
 from .report import write_html, write_json
@@ -32,51 +34,64 @@ def build_parser() -> argparse.ArgumentParser:
         help="Report format (default: both)",
     )
     analyze.add_argument("--redact", action="store_true", help="Pseudonymise user, IP, and device identifiers in reports")
-    analyze.add_argument("--spray-users", type=int, default=5, help="Unique users required for password-spray detection")
-    analyze.add_argument("--spray-window", type=int, default=10, help="Password-spray time window in minutes")
-    analyze.add_argument("--bruteforce-failures", type=int, default=8, help="Failures required for brute-force detection")
-    analyze.add_argument("--bruteforce-window", type=int, default=10, help="Brute-force time window in minutes")
-    analyze.add_argument("--success-after-failures", type=int, default=5, help="Failures before a success is escalated")
-    analyze.add_argument("--success-window", type=int, default=15, help="Failure-to-success time window in minutes")
-    analyze.add_argument("--business-start", type=int, default=7, help="Business-day start hour in UTC")
-    analyze.add_argument("--business-end", type=int, default=20, help="Business-day end hour in UTC")
+    analyze.add_argument(
+        "--profile",
+        choices=("learner", "balanced", "strict"),
+        default="balanced",
+        help="Rule-threshold profile (default: balanced)",
+    )
+    analyze.add_argument("--config", type=Path, help="Optional JSON file with thresholds, allow-lists, and suppressions")
+    analyze.add_argument("--spray-users", type=int, default=None, help="Override unique users required for password spray")
+    analyze.add_argument("--spray-window", type=int, default=None, help="Override password-spray window in minutes")
+    analyze.add_argument("--bruteforce-failures", type=int, default=None, help="Override brute-force failure threshold")
+    analyze.add_argument("--bruteforce-window", type=int, default=None, help="Override brute-force window in minutes")
+    analyze.add_argument("--success-after-failures", type=int, default=None, help="Override failure-to-success threshold")
+    analyze.add_argument("--success-window", type=int, default=None, help="Override failure-to-success window in minutes")
+    analyze.add_argument("--mfa-failures", type=int, default=None, help="Override MFA-fatigue failure threshold")
+    analyze.add_argument("--mfa-window", type=int, default=None, help="Override MFA-fatigue window in minutes")
+    analyze.add_argument("--correlation-window", type=int, default=None, help="Override incident-correlation window in minutes")
+    analyze.add_argument("--business-start", type=int, default=None, help="Override business-day start hour in UTC")
+    analyze.add_argument("--business-end", type=int, default=None, help="Override business-day end hour in UTC")
     analyze.add_argument("--disable-off-hours", action="store_true", help="Disable low-severity off-hours sign-in findings")
     return parser
 
 
-def _validate_args(args: argparse.Namespace) -> None:
-    positive_fields = (
-        "spray_users",
-        "spray_window",
-        "bruteforce_failures",
-        "bruteforce_window",
-        "success_after_failures",
-        "success_window",
-    )
-    for field in positive_fields:
-        if getattr(args, field) < 1:
-            raise ValueError(f"--{field.replace('_', '-')} must be at least 1")
-    if not 0 <= args.business_start <= 23 or not 1 <= args.business_end <= 24:
-        raise ValueError("Business hours must be within 00:00-24:00 UTC")
-    if args.business_start >= args.business_end:
-        raise ValueError("--business-start must be earlier than --business-end")
+def _apply_cli_overrides(config: DetectionConfig, args: argparse.Namespace) -> DetectionConfig:
+    mapping = {
+        "spray_users": "spray_users",
+        "spray_window": "spray_window_minutes",
+        "bruteforce_failures": "brute_force_failures",
+        "bruteforce_window": "brute_force_window_minutes",
+        "success_after_failures": "success_after_failures",
+        "success_window": "success_window_minutes",
+        "mfa_failures": "mfa_failures",
+        "mfa_window": "mfa_window_minutes",
+        "correlation_window": "correlation_window_minutes",
+        "business_start": "business_start_hour",
+        "business_end": "business_end_hour",
+    }
+    for arg_name, field_name in mapping.items():
+        value = getattr(args, arg_name)
+        if value is not None:
+            setattr(config, field_name, value)
+    if args.disable_off_hours:
+        config.enable_off_hours = False
+    validate_config(config)
+    return config
+
+
+def _build_config(args: argparse.Namespace) -> DetectionConfig:
+    config = get_profile(args.profile)
+    if args.config:
+        config = load_config(args.config, config)
+    return _apply_cli_overrides(config, args)
 
 
 def analyze(args: argparse.Namespace) -> int:
-    _validate_args(args)
+    config = _build_config(args)
     events = load_events(args.input)
-    config = DetectionConfig(
-        spray_users=args.spray_users,
-        spray_window_minutes=args.spray_window,
-        brute_force_failures=args.bruteforce_failures,
-        brute_force_window_minutes=args.bruteforce_window,
-        success_after_failures=args.success_after_failures,
-        success_window_minutes=args.success_window,
-        business_start_hour=args.business_start,
-        business_end_hour=args.business_end,
-        enable_off_hours=not args.disable_off_hours,
-    )
     findings = run_detections(events, config)
+    source_products = sorted({event.source_product for event in events})
     result = AnalysisResult(
         source_file=args.input.name,
         generated_at=datetime.now(tz=timezone.utc),
@@ -85,18 +100,10 @@ def analyze(args: argparse.Namespace) -> int:
         metadata={
             "triagebloom_version": __version__,
             "processing_mode": "local",
+            "profile": args.profile,
+            "source_products": source_products,
             "triggered_rules": sorted({finding.rule_id for finding in findings}),
-            "configuration": {
-                "spray_users": config.spray_users,
-                "spray_window_minutes": config.spray_window_minutes,
-                "brute_force_failures": config.brute_force_failures,
-                "brute_force_window_minutes": config.brute_force_window_minutes,
-                "success_after_failures": config.success_after_failures,
-                "success_window_minutes": config.success_window_minutes,
-                "business_start_hour_utc": config.business_start_hour,
-                "business_end_hour_utc": config.business_end_hour,
-                "off_hours_enabled": config.enable_off_hours,
-            },
+            "configuration": config.public_dict(),
         },
     )
 
@@ -110,6 +117,7 @@ def analyze(args: argparse.Namespace) -> int:
         outputs.append(write_json(result, args.output_dir / f"{stem}-triagebloom.json", args.redact, salt))
 
     print(f"Processed {len(events)} events and generated {len(findings)} findings.")
+    print(f"Source products: {', '.join(source_products)}")
     for output in outputs:
         print(f"Report: {output.resolve()}")
     return 0
@@ -121,7 +129,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "analyze":
             return analyze(args)
-    except (FileNotFoundError, InputFormatError, ValueError) as exc:
+    except (FileNotFoundError, InputFormatError, ValueError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
     parser.error("Unknown command")

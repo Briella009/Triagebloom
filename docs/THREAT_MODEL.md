@@ -16,8 +16,11 @@ A user may publish a report containing real names, IP addresses, device names, o
 
 Mitigations:
 
-- local processing
+- local-first CLI and locally runnable Streamlit mode for sensitive investigations
+- explicit hosted-interface warning and confirmation before uploaded files are analysed
+- 25 MB upload cap in the Streamlit deployment configuration
 - optional report pseudonymisation
+- redacted reports pseudonymise finding identifiers, configured allow-list identifiers, and the source filename
 - raw rows are not embedded in reports
 - repeated warnings against publishing confidential logs
 
@@ -37,7 +40,8 @@ A large or crafted file may consume memory or processing time.
 
 Current limitation:
 
-- the MVP loads the full file into memory
+- the engine loads the full file into memory
+- the hosted interface therefore enforces a 25 MB upload cap
 
 Planned mitigations:
 
@@ -62,9 +66,11 @@ Mitigations:
 
 A malicious dependency or release may alter analysis.
 
-Current mitigation:
+Current mitigations:
 
-- zero runtime dependencies
+- zero third-party runtime dependencies in the core engine
+- Streamlit is isolated as an optional UI dependency
+- dependency installation is exercised in CI
 
 Planned mitigations:
 
@@ -72,3 +78,14 @@ Planned mitigations:
 - release provenance
 - software bill of materials
 - protected publishing workflow
+
+### Over-broad allow-listing
+
+A trusted-looking user, device, or IP can still be involved in malicious activity. A broad allow-list can therefore hide important findings.
+
+Mitigations:
+
+- exact-value allow-lists rather than wildcard rules
+- a multi-entity finding is not suppressed merely because one of several users is allow-listed
+- configuration is included in non-redacted analysis metadata for auditability
+- documentation warns that allow-lists must be reviewed and justified

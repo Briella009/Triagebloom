@@ -18,6 +18,17 @@ class NormalizedEvent:
     source_ip: str | None = None
     device: str | None = None
     command_line: str | None = None
+    parent_process: str | None = None
+    file_name: str | None = None
+    sha256: str | None = None
+    source_product: str = "generic"
+    conditional_access_status: str | None = None
+    risk_level: str | None = None
+    risk_state: str | None = None
+    authentication_requirement: str | None = None
+    authentication_method: str | None = None
+    alert_severity: str | None = None
+    context: dict[str, Any] = field(default_factory=dict)
     raw: dict[str, Any] = field(default_factory=dict, repr=False)
 
     def to_dict(self) -> dict[str, Any]:
