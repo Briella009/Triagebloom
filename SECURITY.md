@@ -20,6 +20,4 @@ Do not include real credentials, tokens, client logs, or personal information.
 
 ## Security boundaries
 
-The core TriageBloom engine is designed to read event exports and generate reports without making network requests, executing commands from log content, or performing automatic response actions. A change that introduces any of those behaviours requires explicit design review and documentation.
-
-The optional Streamlit interface can be run locally or deployed to a hosting environment. A public hosted deployment is **not** a confidential-log processing service: uploaded content is processed by that hosting environment. Use public deployments only with synthetic, redacted, or explicitly authorised non-confidential data. Use the CLI or a locally run Streamlit instance for sensitive investigations.
+TriageBloom is designed to read local event exports and write local reports. It should not make network requests, execute commands from log content, or perform automatic response actions. A change that introduces any of those behaviours requires explicit design review and documentation.

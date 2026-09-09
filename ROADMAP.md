@@ -28,8 +28,6 @@ The roadmap uses measurable release criteria so progress can be independently ve
 - [x] Publish a labelled synthetic evaluation dataset
 - [x] Report precision, recall, F1, and false-positive rate on the synthetic labelled dataset
 - [x] Exceed 80% statement coverage in release preparation
-- [x] Add a privacy-aware Streamlit interface for synthetic, redacted, or authorised non-confidential data
-- [x] Add Docker and Streamlit Community Cloud deployment configuration
 
 ## Validation milestone before 1.0
 
@@ -54,6 +52,7 @@ The following are deliberately not required for 1.0:
 
 - direct Sentinel or Defender API connectivity
 - Sigma import
+- browser dashboard
 - plugin marketplace
 - automated response actions
 

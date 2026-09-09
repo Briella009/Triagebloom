@@ -1,1 +1,14 @@
-[{"Timestamp":"2026-08-21T09:10:00Z","ReportId":"def-proc-001","DeviceName":"LAPTOP-DEMO-01","ActionType":"ProcessCreated","AccountName":"alex@example.org","FileName":"powershell.exe","ProcessCommandLine":"powershell.exe -WindowStyle Hidden -EncodedCommand UwB5AG4AdABoAGUAdABpAGMA","InitiatingProcessFileName":"winword.exe","InitiatingProcessCommandLine":"WINWORD.EXE demo.docm","SHA256":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}]
+[
+  {
+    "Timestamp": "2026-08-21T09:10:00Z",
+    "ReportId": "def-proc-001",
+    "DeviceName": "LAPTOP-DEMO-01",
+    "ActionType": "ProcessCreated",
+    "AccountName": "alex@example.org",
+    "FileName": "powershell.exe",
+    "ProcessCommandLine": "powershell.exe -WindowStyle Hidden -EncodedCommand UwB5AG4AdABoAGUAdABpAGMA",
+    "InitiatingProcessFileName": "winword.exe",
+    "InitiatingProcessCommandLine": "WINWORD.EXE demo.docm",
+    "SHA256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  }
+]
