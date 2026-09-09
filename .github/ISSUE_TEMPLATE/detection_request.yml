@@ -1,0 +1,37 @@
+name: Detection request
+description: Propose an explainable detection rule or schema adapter
+title: "[Detection]: "
+labels: ["detection", "enhancement"]
+body:
+  - type: input
+    id: problem
+    attributes:
+      label: Threat behaviour or analysis problem
+    validations:
+      required: true
+  - type: input
+    id: mitre
+    attributes:
+      label: Proposed MITRE ATT&CK mapping
+      placeholder: "T1110.003"
+  - type: textarea
+    id: fields
+    attributes:
+      label: Required event fields
+      description: List the canonical fields and any vendor aliases.
+    validations:
+      required: true
+  - type: textarea
+    id: logic
+    attributes:
+      label: Proposed detection logic
+      description: Include thresholds, windows, grouping entities, and likely false positives.
+    validations:
+      required: true
+  - type: textarea
+    id: fixtures
+    attributes:
+      label: Synthetic test cases
+      description: Describe at least one true-positive and one benign case.
+    validations:
+      required: true

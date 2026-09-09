@@ -1,0 +1,18 @@
+{
+  "spray_users": 5,
+  "spray_window_minutes": 10,
+  "brute_force_failures": 8,
+  "brute_force_window_minutes": 10,
+  "success_after_failures": 5,
+  "success_window_minutes": 15,
+  "mfa_failures": 4,
+  "mfa_window_minutes": 15,
+  "correlation_window_minutes": 30,
+  "business_start_hour": 7,
+  "business_end_hour": 20,
+  "enable_off_hours": true,
+  "allow_users": ["svc-backup@example.org"],
+  "allow_source_ips": ["192.0.2.254"],
+  "allow_devices": ["ADMIN-JUMP-01"],
+  "suppressed_rule_ids": []
+}

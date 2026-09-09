@@ -2,7 +2,7 @@
 
 ## Design goal
 
-TriageBloom should turn a small exported event set into a transparent first-pass triage report without sending data to a third party or requiring a full SIEM deployment.
+TriageBloom turns exported security-event sets into transparent first-pass triage reports without sending data to a third party or requiring a full SIEM deployment.
 
 ## Processing flow
 
@@ -15,42 +15,66 @@ Reader
   validates format and produces dictionaries
         |
         v
-Normaliser
-  maps vendor field aliases to a canonical event model
+Source recognition + normaliser
+  recognises Microsoft Entra / Defender-shaped events
+  maps vendor fields to a canonical event model
         |
         v
 Detection engine
-  executes deterministic, testable rules
+  deterministic authentication and endpoint rules
         |
-        v
+        +-----------------------+
+        |                       |
+        v                       v
+Single-pattern findings     Incident correlation
+                                failures -> success -> process
+        |                       |
+        +-----------+-----------+
+                    v
+Allow-list / suppression filter
+                    |
+                    v
 Finding model
-  risk, confidence, MITRE mapping, evidence, next steps
-        |
-        v
+  risk, confidence, MITRE mapping, evidence, context, next steps
+                    |
+                    v
 Reporter
   optional pseudonymisation, then HTML and/or JSON output
 ```
 
 ## Canonical event model
 
-Each event contains:
+Core fields include:
 
 - `event_id`
 - `timestamp` in UTC
 - `category`
 - `event_type`
 - `outcome`
-- optional `user`
-- optional `source_ip`
-- optional `device`
-- optional `command_line`
-- an in-memory copy of the raw row
+- `user`
+- `source_ip`
+- `device`
+- `command_line`
 
-The report does not write the full raw row. This reduces accidental disclosure and keeps the output focused on evidence needed for triage.
+Version 0.2.0 adds optional context:
+
+- `source_product`
+- `parent_process`
+- `file_name`
+- `sha256`
+- `conditional_access_status`
+- `risk_level`
+- `risk_state`
+- `authentication_requirement`
+- `authentication_method`
+- `alert_severity`
+- a small non-executable `context` dictionary for useful exported fields
+
+The report never executes values from these fields.
 
 ## Detection model
 
-Detectors are pure functions that receive a list of normalised events and a configuration object. They return zero or more findings.
+Detectors are pure functions that receive normalised events and a configuration object. They return zero or more findings.
 
 A finding contains:
 
@@ -60,44 +84,54 @@ A finding contains:
 - MITRE ATT&CK mapping
 - concise summary
 - exact evidence event IDs
-- affected entities
+- affected entities and source products
 - trigger explanation
 - recommended investigation steps
 - first-seen and last-seen timestamps
 
 No detector can block an IP address, disable an account, delete a file, or execute a command.
 
+## Correlation model
+
+`TB-CORR-001` intentionally uses a narrow deterministic chain:
+
+1. repeated authentication failures for a user
+2. successful authentication for that user
+3. suspicious endpoint execution for the same user and compatible device context
+4. all stages occur within a configurable correlation window
+
+This is not general-purpose incident reconstruction. The narrow definition makes the rule testable and explainable.
+
 ## Risk scoring
 
-The MVP combines a severity base score with rule confidence:
+The release keeps a visible formula:
 
 ```text
 risk = 75 percent of severity base + 25 percent of confidence
 ```
 
-This formula is intentionally simple and visible. It is not a statistical probability of compromise. Future versions should evaluate calibration against labelled datasets before using more complex scoring.
+Some confidence values are enriched by explicit Microsoft risk context. The output is not a probability of compromise and is not statistically calibrated.
+
+## Configuration and suppression
+
+A built-in profile establishes threshold defaults. Optional JSON configuration can then set thresholds, entity allow-lists, and rule suppressions. CLI overrides are applied last.
+
+Suppression happens after findings are created so the underlying detection logic remains testable.
 
 ## Privacy and trust boundaries
 
 The core engine:
 
-- reads a local file
+- can read local files or in-memory uploaded bytes
 - performs no network requests
 - treats all log content as untrusted data
-- does not evaluate or execute strings from logs
-- writes reports only to the selected local directory
+- never evaluates or executes log strings
+- writes reports only when the CLI is asked to do so
 
-The `--redact` option pseudonymises users, source IPs, and device names in report content. It does not modify the source file.
+The Streamlit layer calls the same normalisation, detection, and report-rendering functions. In a public hosted deployment, uploaded bytes are processed by the hosting environment and therefore cross a different trust boundary from local CLI use. The interface presents an explicit warning and requires users to confirm that uploaded data is synthetic, redacted, or otherwise authorised and non-confidential.
 
-## Extension points
+The `--redact` option and Streamlit download toggle pseudonymise users, source IPs, device names, configured allow-list identifiers, and the source filename in report content. They do not modify the source data.
 
-Planned extension points include:
+## Evaluation boundary
 
-- schema adapters for named products
-- parser plugins
-- detection plugins
-- suppression and allow-list configuration
-- incident correlation across multiple files
-- a local browser interface
-
-Each extension must preserve local-first operation by default and keep automated response out of scope.
+The included evaluation dataset is synthetic and rule-level. It exists to verify deterministic behaviour and reproducibility. It does not establish production accuracy or operational effectiveness.

@@ -1,0 +1,1 @@
+[{"Timestamp":"2026-08-21T09:12:00Z","AlertId":"def-alert-001","Title":"Suspicious PowerShell activity","Severity":"High","Category":"Execution","ServiceSource":"MicrosoftDefenderForEndpoint","DetectionSource":"EndpointDetectionAndResponse","DeviceName":"LAPTOP-DEMO-01","AccountName":"alex@example.org"}]

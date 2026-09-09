@@ -1,0 +1,20 @@
+{
+  "evaluation_type": "synthetic rule-level case evaluation",
+  "case_count": 8,
+  "rule_count": 7,
+  "true_positives": 9,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "true_negatives": 47,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "false_positive_rate": 0.0,
+  "accuracy": 1.0,
+  "environment": {"python": "3.13.5", "platform": "Linux-6.18.35-x86_64-with-glibc2.41"},
+  "limitations": [
+    "The evaluation cases are synthetic and do not estimate real-world SOC performance.",
+    "Metrics are computed over rule/case pairs, not individual production alerts.",
+    "Results should be replicated on public or independently curated datasets before broader claims are made."
+  ]
+}

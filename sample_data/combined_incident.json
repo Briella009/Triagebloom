@@ -1,0 +1,9 @@
+[
+  {"timestamp":"2026-08-21T10:00:00Z","event_id":"chain-01","event_type":"SignInFailure","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.90","device":"FIN-WS-01"},
+  {"timestamp":"2026-08-21T10:01:00Z","event_id":"chain-02","event_type":"SignInFailure","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.90","device":"FIN-WS-01"},
+  {"timestamp":"2026-08-21T10:02:00Z","event_id":"chain-03","event_type":"SignInFailure","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.90","device":"FIN-WS-01"},
+  {"timestamp":"2026-08-21T10:03:00Z","event_id":"chain-04","event_type":"SignInFailure","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.90","device":"FIN-WS-01"},
+  {"timestamp":"2026-08-21T10:04:00Z","event_id":"chain-05","event_type":"SignInFailure","outcome":"Failure","user":"finance.admin@example.org","source_ip":"198.51.100.90","device":"FIN-WS-01"},
+  {"timestamp":"2026-08-21T10:05:00Z","event_id":"chain-ok","event_type":"SignInSuccess","outcome":"Success","user":"finance.admin@example.org","source_ip":"198.51.100.90","device":"FIN-WS-01"},
+  {"Timestamp":"2026-08-21T10:07:00Z","ReportId":"chain-ps","DeviceName":"FIN-WS-01","ActionType":"ProcessCreated","AccountName":"finance.admin@example.org","FileName":"powershell.exe","ProcessCommandLine":"powershell.exe -enc UwB5AG4AdABoAGUAdABpAGMA","InitiatingProcessFileName":"explorer.exe","SHA256":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+]

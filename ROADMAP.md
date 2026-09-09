@@ -12,35 +12,49 @@ The roadmap uses measurable release criteria so progress can be independently ve
 - [x] Generate explainable HTML and JSON reports
 - [x] Add automated tests and synthetic data
 
-## 0.2 - Microsoft security context
+## 0.2 - Microsoft security + correlation + evaluation
 
-- [ ] Add dedicated Microsoft Entra ID schema adapter
-- [ ] Add Microsoft Defender process and alert adapters
-- [ ] Include conditional-access and authentication-method context
-- [ ] Add MFA fatigue detection
-- [ ] Publish at least three sanitised schema fixtures
-- [ ] Reach at least 80 percent test coverage
+- [x] Add dedicated Microsoft Entra ID schema context
+- [x] Add Microsoft Defender process adapter
+- [x] Add Microsoft Defender alert adapter
+- [x] Include Conditional Access and sign-in risk context
+- [x] Preserve authentication-method context where exported
+- [x] Preserve parent-process, file-name, and SHA256 context
+- [x] Add MFA-fatigue detection
+- [x] Correlate authentication and suspicious endpoint activity into incident chains
+- [x] Add configurable rule profiles
+- [x] Add rule suppression and entity allow-lists
+- [x] Publish at least three synthetic Microsoft-style schema fixtures
+- [x] Publish a labelled synthetic evaluation dataset
+- [x] Report precision, recall, F1, and false-positive rate on the synthetic labelled dataset
+- [x] Exceed 80% statement coverage in release preparation
+- [x] Add a privacy-aware Streamlit interface for synthetic, redacted, or authorised non-confidential data
+- [x] Add Docker and Streamlit Community Cloud deployment configuration
 
-## 0.3 - Evaluation and incident correlation
+## Validation milestone before 1.0
 
-- [ ] Correlate authentication and endpoint events into incident chains
-- [ ] Add configurable rule profiles for learners and small SOC teams
-- [ ] Publish a labelled synthetic evaluation dataset
-- [ ] Report precision, recall, and false-positive rate on the labelled dataset
-- [ ] Add rule-suppression and allow-list configuration
+- [ ] Obtain independent review from at least three cybersecurity practitioners
+- [ ] Complete a controlled pilot with at least 10 participants using synthetic or authorised sanitised data
+- [ ] Record usability, clarity, investigation time, correct findings, and false-positive acceptance
+- [ ] Incorporate at least three evidence-based improvements if identified
+- [ ] Evaluate against an appropriate public or independently curated dataset where schema and licensing permit
+- [ ] Document all limitations and negative results
 
-## 0.4 - Community and integrations
-
-- [ ] Import a safe subset of Sigma rules
-- [ ] Add a browser interface that runs locally
-- [ ] Add a documented plugin interface for parsers and detections
-- [ ] Publish a contributor guide for new detection rules
-- [ ] Complete an external pilot with documented, consented feedback
-
-## 1.0 - Stable educational and small-team release
+## 1.0 - Validated stable release
 
 - [ ] Stable input schema and compatibility policy
-- [ ] Reproducible benchmark results
-- [ ] Security review and threat model
-- [ ] Signed releases and software bill of materials
-- [ ] At least two independent maintainers or regular external contributors
+- [ ] Reproducible benchmark and evaluation package
+- [ ] Updated security review and threat model
+- [ ] External pilot summary
+- [ ] Stable release notes and migration guidance
+
+## Deferred ideas
+
+The following are deliberately not required for 1.0:
+
+- direct Sentinel or Defender API connectivity
+- Sigma import
+- plugin marketplace
+- automated response actions
+
+They may be explored only if real users identify a need.
