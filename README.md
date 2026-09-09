@@ -6,7 +6,11 @@ TriageBloom converts exported CSV or JSON security events into analyst-ready HTM
 
 The core engine remains dependency-free and can run entirely on an analyst's computer. An optional Streamlit interface provides a browser workflow for demos and authorised non-confidential datasets.
 
-> **Project status:** public alpha, version 0.2.0. Use it for learning, controlled pilots, research, and analyst assistance. Do not treat it as an autonomous incident-response system or a substitute for SIEM/EDR telemetry.
+> **Project status:** public alpha, version 0.2.1. Use it for learning, controlled pilots, research, and analyst assistance. Do not treat it as an autonomous incident-response system or a substitute for SIEM/EDR telemetry.
+
+**Live demo:** https://triagebloom.streamlit.app
+
+> The public demo is for synthetic, redacted, or explicitly authorised non-confidential data only. Use the local CLI or local Streamlit app for sensitive investigations.
 
 ## What changed in 0.2.0
 
@@ -238,7 +242,7 @@ coverage run --source=src/triagebloom -m unittest discover -s tests -v
 coverage report --fail-under=80
 ```
 
-The final v0.2.0 preparation snapshot passed 35 automated tests and reached 90% statement coverage across the core package.
+The v0.2.1 validation run passed 36 automated tests and reached 90% statement coverage across the core package.
 
 ## Synthetic performance benchmark
 
@@ -273,7 +277,7 @@ Deterministic detections
 Allow-list / suppression filtering
         |
         v
-Risk + confidence + MITRE context
+Triage score + rule confidence + MITRE context
         |
         v
 Explainable HTML / JSON report
@@ -300,7 +304,7 @@ Analyse only data you own or are authorised to handle. TriageBloom does not scan
 
 ## Technical references
 
-Microsoft schema references and MITRE ATT&CK mappings used by the project are listed in [`docs/REFERENCES.md`](docs/REFERENCES.md).
+Microsoft schema references and MITRE ATT&CK mappings used by the project are listed in [`docs/REFERENCES.md`](docs/REFERENCES.md). Mapping and score-semantics notes are in [`docs/ATTACK_MAPPING_NOTES.md`](docs/ATTACK_MAPPING_NOTES.md).
 
 ## Contributing
 
