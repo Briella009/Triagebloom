@@ -113,8 +113,8 @@ def render_html(result: AnalysisResult, redact: bool = False, salt: str | None =
         detail_sections.append(
             f'<section class="finding" id="{anchor}">'
             f'<div class="finding-heading"><h3>{html.escape(finding["title"])}</h3>{_pill(finding["severity"])}</div>'
-            f'<p class="rule">{html.escape(finding["rule_id"])} | Risk {finding["risk_score"]}/100 | '
-            f'Confidence {finding["confidence"]}% | {html.escape(finding["mitre_technique"])} '
+            f'<p class="rule">{html.escape(finding["rule_id"])} | Triage score {finding["risk_score"]}/100 | '
+            f'Rule confidence {finding["confidence"]}/100 | {html.escape(finding["mitre_technique"])} '
             f'({html.escape(finding["mitre_tactic"])})</p>'
             f'<p>{html.escape(finding["summary"])}</p>'
             "<h4>Why it triggered</h4>"
@@ -194,10 +194,11 @@ footer {{ color:var(--muted); font-size:.86rem; margin-top:38px; }}
     <div class="card"><span>High</span><strong>{severity_counts.get("high", 0)}</strong></div>
     <div class="card"><span>Medium</span><strong>{severity_counts.get("medium", 0)}</strong></div>
   </div>
+  <div class="notice"><strong>Score semantics:</strong> triage score and rule confidence are deterministic prioritisation heuristics, not calibrated probabilities of compromise.</div>
   <h2>Finding summary</h2>
   <div style="overflow-x:auto">
   <table>
-    <thead><tr><th>Rule</th><th>Finding</th><th>Severity</th><th>Risk</th><th>MITRE</th><th>First seen</th></tr></thead>
+    <thead><tr><th>Rule</th><th>Finding</th><th>Severity</th><th>Triage score</th><th>MITRE</th><th>First seen</th></tr></thead>
     <tbody>{table_body}</tbody>
   </table>
   </div>

@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## 0.2.1 - 2026-09-09
+
+### Fixed
+
+- Updated MITRE ATT&CK tactic labels to the current Enterprise ATT&CK terminology for T1078, T1105, T1218.005, T1218.010, T1218.011, and T1197.
+- Removed an inaccurate Credential Access tactic label from the T1078 + T1059.001 correlation finding.
+- Clarified that triage and confidence scores are deterministic prioritisation heuristics, not calibrated probabilities of compromise.
+- Improved Streamlit entity readability and score labels.
+- Added the live Streamlit demo link to the README.
+
 ## 0.2.0 - 2026-09-09
 
 ### Added

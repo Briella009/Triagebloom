@@ -63,7 +63,7 @@ with st.sidebar:
         ("balanced", "learner", "strict"),
         help="Balanced is the default. Learner lowers thresholds for demonstrations; strict reduces noise.",
     )
-    redact = st.toggle("Pseudonymise identifiers in downloads", value=True)
+    redact = st.toggle("Pseudonymise identifiers in downloaded reports", value=True)
     enable_off_hours = st.toggle("Review off-hours sign-ins", value=True)
 
     with st.expander("Advanced thresholds"):
@@ -173,8 +173,8 @@ if analyze_clicked:
                     "Rule": item.rule_id,
                     "Finding": item.title,
                     "Severity": item.severity.upper(),
-                    "Risk": item.risk_score,
-                    "Confidence": item.confidence,
+                    "Triage score": item.risk_score,
+                    "Rule confidence": item.confidence,
                     "MITRE ATT&CK": item.mitre_technique,
                     "First seen": item.first_seen.isoformat(),
                 }
@@ -184,15 +184,19 @@ if analyze_clicked:
             hide_index=True,
         )
 
+        st.caption("Triage score and rule confidence are deterministic prioritisation heuristics, not probabilities of compromise.")
+
         st.subheader("Analyst detail")
         for finding in findings:
             with st.expander(f"{finding.severity.upper()} · {finding.rule_id} · {finding.title}"):
                 st.write(finding.summary)
-                st.write(f"**Risk:** {finding.risk_score}/100 · **Confidence:** {finding.confidence}%")
+                st.write(f"**Triage score:** {finding.risk_score}/100 · **Rule confidence:** {finding.confidence}/100")
                 st.write(f"**MITRE ATT&CK:** {finding.mitre_technique} · {finding.mitre_tactic}")
                 if finding.entities:
                     st.write("**Entities**")
-                    st.json(finding.entities, expanded=False)
+                    for key, values in finding.entities.items():
+                        label = key.replace("_", " ").title()
+                        st.write(f"- **{label}:** {', '.join(str(value) for value in values)}")
                 st.write("**Why it triggered**")
                 for item in finding.why_it_triggered:
                     st.write(f"- {item}")

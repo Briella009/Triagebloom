@@ -54,6 +54,8 @@ class ReportingTests(unittest.TestCase):
         html_text = render_html(result, redact=True, salt="fixed-test-salt")
         self.assertIn('"finding_count"', json_text)
         self.assertIn("TriageBloom analysis report", html_text)
+        self.assertIn("Triage score", html_text)
+        self.assertIn("not calibrated probabilities of compromise", html_text)
 
     def test_web_report_does_not_claim_local_processing(self) -> None:
         result = self._result()
