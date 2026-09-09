@@ -4,6 +4,8 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Any
 
+from .attack import canonical_tactics
+
 
 @dataclass(slots=True)
 class NormalizedEvent:
@@ -56,6 +58,9 @@ class Finding:
     next_steps: list[str]
     first_seen: datetime
     last_seen: datetime
+
+    def __post_init__(self) -> None:
+        self.mitre_tactic = canonical_tactics(self.mitre_technique, self.mitre_tactic)
 
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
