@@ -24,6 +24,18 @@ class V020DetectionTests(unittest.TestCase):
         findings = run_detections(events, DetectionConfig(enable_off_hours=False))
         self.assertIn("TB-CORR-001", {finding.rule_id for finding in findings})
 
+    def test_current_attack_tactic_labels_are_used(self) -> None:
+        events = load_events(ROOT / "sample_data" / "combined_incident.json")
+        findings = run_detections(events, DetectionConfig(enable_off_hours=False))
+        by_rule = {finding.rule_id: finding for finding in findings}
+        self.assertIn("Stealth", by_rule["TB-AUTH-003"].mitre_tactic)
+        self.assertNotIn("Defense Evasion", by_rule["TB-AUTH-003"].mitre_tactic)
+        self.assertEqual(
+            by_rule["TB-CORR-001"].mitre_tactic,
+            "Stealth, Persistence, Privilege Escalation, Initial Access, Execution",
+        )
+        self.assertNotIn("Credential Access", by_rule["TB-CORR-001"].mitre_tactic)
+
     def test_incident_chain_requires_suspicious_process(self) -> None:
         events = load_events(ROOT / "sample_data" / "combined_incident.json")
         safe_events = [event for event in events if event.category != "process"]
