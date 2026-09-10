@@ -6,6 +6,7 @@ import json
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 
@@ -63,6 +64,24 @@ class ComisetResearchTests(unittest.TestCase):
                 handle.write('{"a":3}\n{"a":4}\n')
             self.assertEqual(list(comiset.iter_rows(line_path)), [{"a": 3}, {"a": 4}])
 
+    def test_streams_single_data_member_directly_from_zip(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive_path = Path(directory) / "records.zip"
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                archive.writestr("nested/records.jsonl", '{"a":1}\n{"a":2}\n')
+                archive.writestr("README.txt", "metadata")
+            self.assertEqual(list(comiset.iter_rows(archive_path)), [{"a": 1}, {"a": 2}])
+
+    def test_zip_with_multiple_data_members_requires_explicit_member(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive_path = Path(directory) / "records.zip"
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                archive.writestr("one.jsonl", '{"a":1}\n')
+                archive.writestr("two.jsonl", '{"a":2}\n')
+            with self.assertRaises(comiset.InputFormatError):
+                list(comiset.iter_rows(archive_path))
+            self.assertEqual(list(comiset.iter_rows(archive_path, "two.jsonl")), [{"a": 2}])
+
     def test_supported_process_event_scores_as_true_positive(self) -> None:
         malicious = comiset.to_record(
             {
@@ -88,11 +107,69 @@ class ComisetResearchTests(unittest.TestCase):
             },
             2,
         )
-        overall, _, _ = comiset.evaluate_batch([malicious, benign], "balanced")
-        self.assertEqual(overall["tp"], 1)
-        self.assertEqual(overall["fp"], 0)
-        self.assertEqual(overall["fn"], 0)
-        self.assertEqual(overall["tn"], 1)
+        binary, exact, _, _ = comiset.evaluate_batch([malicious, benign], "balanced")
+        self.assertEqual(binary["tp"], 1)
+        self.assertEqual(binary["fp"], 0)
+        self.assertEqual(binary["fn"], 0)
+        self.assertEqual(binary["tn"], 1)
+        self.assertGreater(exact["tp"], 0)
+
+    def test_binary_and_exact_technique_scoring_are_separate(self) -> None:
+        # TriageBloom detects the LOLBin pattern, but the supplied reference label is a different
+        # supported technique. Binary supported-scope detection is therefore positive while
+        # exact-technique agreement correctly records one FP and one FN.
+        mismatched = comiset.to_record(
+            {
+                "@timestamp": "2022-11-18T10:20:30Z",
+                "CommandLine": "rundll32.exe javascript:example",
+                "Process_name": "rundll32.exe",
+                "Process_guid": "mismatch-1",
+                "Host_name": "computer01",
+                "User_account": "user01",
+                "Rule_technique_id": "T1218.005",
+            },
+            1,
+        )
+        binary, exact, per_technique, _ = comiset.evaluate_batch([mismatched], "balanced")
+        self.assertEqual(binary["tp"], 1)
+        self.assertEqual(per_technique["T1218.005"]["fn"], 1)
+        self.assertEqual(per_technique["T1218.011"]["fp"], 1)
+        self.assertEqual(exact["fn"], 1)
+        self.assertEqual(exact["fp"], 1)
+
+    def test_audit_reports_schema_and_supported_scope(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sample.jsonl"
+            path.write_text(
+                json.dumps(
+                    {
+                        "@timestamp": "2022-11-18T10:20:30Z",
+                        "CommandLine": "powershell.exe -enc AAAA",
+                        "Process_name": "powershell.exe",
+                        "ParentCommandLine": "cmd.exe /c start",
+                        "Host_name": "computer01",
+                        "User_account": "user01",
+                        "Rule_technique_id": "T1059.001",
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            result = comiset.audit(path, None, 100)
+            self.assertEqual(result["events_scanned"], 1)
+            self.assertEqual(result["parseable_events"], 1)
+            self.assertEqual(result["events_with_supported_attack_reference"], 1)
+            self.assertEqual(result["supported_technique_counts"]["T1059.001"], 1)
+            self.assertEqual(result["field_coverage"]["command_line"]["coverage"], 1.0)
+
+    def test_fingerprint_can_verify_expected_md5(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sample.bin"
+            path.write_bytes(b"triagebloom")
+            first = comiset.fingerprint(path)
+            second = comiset.fingerprint(path, first["md5"])
+            self.assertEqual(first["sha256"], second["sha256"])
+            self.assertTrue(second["md5_matches_expected"])
 
 
 class LanlResearchTests(unittest.TestCase):
