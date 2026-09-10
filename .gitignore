@@ -17,3 +17,7 @@ Thumbs.db
 
 # Local Streamlit secrets
 .streamlit/secrets.toml
+
+# External research datasets and local evaluation outputs
+evaluation/external/
+research_data/
