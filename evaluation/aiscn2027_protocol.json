@@ -1,0 +1,64 @@
+{
+  "study_id": "triagebloom-aiscn2027-v1",
+  "title": "TriageBloom: Explainable Cross-Event Security Triage for Resource-Constrained SOCs",
+  "status": "pre-results",
+  "primary_dataset": {
+    "name": "COMISET",
+    "source_record": "Zenodo 15375146",
+    "lab_archive": "Comiset23_Lab_Environment_Dataset.zip",
+    "expected_md5": "e838308bfa31fba1e273d500d588aba6"
+  },
+  "secondary_dataset": {
+    "name": "LANL Comprehensive Multi-Source Cyber-Security Events",
+    "role": "authentication stress and sanity check only"
+  },
+  "supported_process_techniques": [
+    "T1059.001",
+    "T1105",
+    "T1197",
+    "T1218.005",
+    "T1218.010",
+    "T1218.011"
+  ],
+  "profiles": [
+    "learner",
+    "balanced",
+    "strict"
+  ],
+  "primary_questions": [
+    "RQ1: Does sequence-aware correlation improve incident-level prioritisation over isolated or uncorrelated detection for supported attack patterns?",
+    "RQ2: How do learner, balanced and strict profiles change the precision-recall and alert-volume trade-off on independently collected security-event data?",
+    "RQ3: What computational cost does the deterministic triage pipeline impose on commodity hardware?"
+  ],
+  "comiset_lab_metrics": [
+    "precision",
+    "recall",
+    "f1_score",
+    "per-technique precision/recall/F1",
+    "findings_per_10000_events",
+    "events_per_second"
+  ],
+  "comiset_real_metrics": [
+    "finding_count",
+    "findings_per_10000_events",
+    "events_per_second"
+  ],
+  "real_environment_interpretation": "Unlabelled real-environment events are not treated as proven benign. Precision, recall and false-positive rate are therefore not primary real-environment claims.",
+  "freeze_rules": [
+    "Run schema and supported-technique audit before final scoring.",
+    "Freeze the TriageBloom commit and profile configurations before the final test run.",
+    "Use development samples only for parser/schema debugging.",
+    "Do not change thresholds in response to final-test misses.",
+    "Report excluded techniques and event classes with reasons.",
+    "Keep synthetic regression results separate from external validation.",
+    "Report negative results and ATT&CK-label disagreements.",
+    "Preserve dataset hashes, command lines, environment details and the exact commit used."
+  ],
+  "claim_boundaries": [
+    "TriageBloom does not claim comprehensive ATT&CK coverage.",
+    "COMISET ATT&CK annotations are treated as reference labels, not perfect forensic ground truth.",
+    "A low-severity off-hours login is not treated as evidence of compromise.",
+    "No analyst-productivity claim will be made without a separate human study.",
+    "No superiority claim against Sentinel, Defender, Sigma or an ML/LLM system will be made without a fair direct comparison."
+  ]
+}
