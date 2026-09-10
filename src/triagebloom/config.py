@@ -65,10 +65,30 @@ PROFILES: dict[str, DetectionConfig] = {
 }
 
 
+_MUTABLE_SET_FIELDS = (
+    "allow_users",
+    "allow_source_ips",
+    "allow_devices",
+    "suppressed_rule_ids",
+)
+
+
+def clone_config(config: DetectionConfig) -> DetectionConfig:
+    """Return an independent config copy, including mutable set fields."""
+
+    return replace(
+        config,
+        allow_users=set(config.allow_users),
+        allow_source_ips=set(config.allow_source_ips),
+        allow_devices=set(config.allow_devices),
+        suppressed_rule_ids=set(config.suppressed_rule_ids),
+    )
+
+
 def get_profile(name: str) -> DetectionConfig:
     if name not in PROFILES:
         raise ValueError(f"Unknown profile {name!r}; choose from {', '.join(sorted(PROFILES))}")
-    return replace(PROFILES[name])
+    return clone_config(PROFILES[name])
 
 
 def _as_set(value: Any, field_name: str) -> set[str]:
@@ -80,7 +100,7 @@ def _as_set(value: Any, field_name: str) -> set[str]:
 
 
 def load_config(path: str | Path, base: DetectionConfig | None = None) -> DetectionConfig:
-    config = replace(base or DetectionConfig())
+    config = clone_config(base or DetectionConfig())
     raw = json.loads(Path(path).read_text(encoding="utf-8"))
     if not isinstance(raw, dict):
         raise ValueError("Configuration file must contain a JSON object")
@@ -110,7 +130,7 @@ def load_config(path: str | Path, base: DetectionConfig | None = None) -> Detect
             raise ValueError("enable_off_hours must be true or false")
         config.enable_off_hours = raw["enable_off_hours"]
 
-    for field_name in ("allow_users", "allow_source_ips", "allow_devices", "suppressed_rule_ids"):
+    for field_name in _MUTABLE_SET_FIELDS:
         if field_name in raw:
             setattr(config, field_name, _as_set(raw[field_name], field_name))
 
