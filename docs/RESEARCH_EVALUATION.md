@@ -18,7 +18,7 @@ COMISET is the primary endpoint/process reference dataset for the current engine
 
 The research adapter is `scripts/research_comiset_eval.py`.
 
-Important claim boundary: COMISET's ATT&CK labels were created by its own event-based detection and labelling pipeline. They are useful **reference labels**, but this study will not describe them as perfect forensic ground truth. This matters because a rule-based TriageBloom detector can agree with a rule-generated COMISET label for reasons that do not establish independent clinical-style ground truth.
+Important claim boundary: COMISET's ATT&CK labels were created by its own event-based detection and labelling pipeline. They are useful **reference labels**, but this study will not describe them as perfect forensic ground truth. Agreement between a rule-based TriageBloom detector and a rule-generated COMISET reference label does not by itself establish independent forensic ground truth.
 
 Current quantitative overlap is restricted to the process techniques implemented by TriageBloom:
 
@@ -30,6 +30,15 @@ Current quantitative overlap is restricted to the process techniques implemented
 - `T1218.011` — Rundll32
 
 The evaluator reports results only for this supported intersection. It must not count all other COMISET attack-labelled events as TriageBloom false negatives.
+
+The official Zenodo release contains two large ZIP archives. The research adapter can stream a CSV/JSON/JSONL/NDJSON member directly from a ZIP archive, so extraction of the full archive is not required for the evaluation pipeline. If an archive contains more than one candidate data member, select the intended member explicitly with `--member`.
+
+Official archive integrity values recorded by the dataset publisher are:
+
+- `Comiset23_Lab_Environment_Dataset.zip` — MD5 `e838308bfa31fba1e273d500d588aba6`
+- `Comiset23_Real_Environment_Dataset.zip` — MD5 `1718e161dc50b8c49e00020b596974d3`
+
+The evaluator includes a streaming fingerprint command that records both MD5 and SHA-256 without loading the archive into memory.
 
 ### LANL Comprehensive Multi-Source Cyber-Security Events
 
@@ -49,38 +58,107 @@ This experiment will be added only after selecting recordings whose telemetry ac
 
 No single public dataset should be forced to validate a capability it cannot observe.
 
-COMISET is strong for modern Windows endpoint/process telemetry and ATT&CK-labelled process behaviours. LANL provides large-scale real enterprise authentication data and explicit red-team authentication references, but little process semantic detail. OTRF recordings are smaller and controlled, but retain the Windows event context needed for sequence-level correlation experiments.
+COMISET is strong for modern Windows endpoint/process telemetry and ATT&CK-labelled process behaviours. LANL provides large-scale enterprise authentication data and explicit red-team authentication references, but little process semantic detail. OTRF recordings are smaller and controlled, but retain Windows event context needed for sequence-level correlation experiments.
 
 Using each dataset only for the claims its telemetry can support is more defensible than reporting one headline accuracy number across incompatible event types.
 
-## COMISET workflow
+## COMISET preflight workflow
 
-After downloading and extracting the official dataset locally, first inspect technique coverage without loading the entire file into memory:
+Do not start by running a full accuracy evaluation. First verify the downloaded archive, inspect its member names, audit schema coverage, and confirm that the TriageBloom-supported ATT&CK intersection is actually present.
+
+### 1. Fingerprint the official archive
 
 ```bash
-python scripts/research_comiset_eval.py summary /path/to/comiset.json \
-  --output evaluation/external/comiset-summary.json
+python scripts/research_comiset_eval.py fingerprint \
+  /path/to/Comiset23_Lab_Environment_Dataset.zip \
+  --output evaluation/external/comiset-lab-fingerprint.json
 ```
 
-For an initial schema check:
+For the official archive filename, the script automatically compares the MD5 value with the publisher's recorded checksum. It also records SHA-256 for the local reproducibility record.
+
+### 2. Identify the intended data member
+
+If the ZIP contains a single CSV/JSON/JSONL/NDJSON data file, the script selects it automatically. If it contains multiple candidate files, the command exits instead of guessing. Use the candidate name reported by the error message with `--member` in later commands.
+
+### 3. Run a schema/scope audit before scoring
 
 ```bash
-python scripts/research_comiset_eval.py summary /path/to/comiset.json \
-  --max-events 10000
+python scripts/research_comiset_eval.py audit \
+  /path/to/Comiset23_Lab_Environment_Dataset.zip \
+  --member '<member-name-if-required>' \
+  --max-events 100000 \
+  --output evaluation/external/comiset-lab-audit-100k.json
 ```
 
-Run the supported-scope evaluator:
+The audit reports:
+
+- rows scanned and successfully adapted;
+- presence/coverage of timestamp, command-line, process-name, parent-process, user, host, and ATT&CK-reference fields;
+- overall ATT&CK reference distribution in the scanned portion;
+- the exact count of events overlapping TriageBloom's supported techniques;
+- parse errors, if any.
+
+An audit of the first `N` records is **not** an accuracy result and must never be reported as one.
+
+### 4. Run the full technique inventory
 
 ```bash
-python scripts/research_comiset_eval.py evaluate /path/to/comiset.json \
+python scripts/research_comiset_eval.py summary \
+  /path/to/Comiset23_Lab_Environment_Dataset.zip \
+  --member '<member-name-if-required>' \
+  --output evaluation/external/comiset-lab-summary.json
+```
+
+Use this inventory to decide whether every planned TriageBloom-supported technique has enough reference-labelled observations to report separately. Do not combine extremely sparse techniques into a headline metric without showing the individual counts.
+
+### 5. Freeze the evaluation commit and configuration
+
+Before final scoring, record:
+
+- git commit SHA;
+- dataset fingerprint;
+- archive member;
+- profile/configuration;
+- evaluation unit;
+- supported-technique list;
+- inclusion/exclusion rules.
+
+Do not change thresholds after viewing final test results.
+
+### 6. Run the supported-scope evaluator
+
+```bash
+python scripts/research_comiset_eval.py evaluate \
+  /path/to/Comiset23_Lab_Environment_Dataset.zip \
+  --member '<member-name-if-required>' \
   --profile balanced \
   --batch-events 100000 \
-  --output evaluation/external/comiset-balanced.json
+  --output evaluation/external/comiset-lab-balanced.json
 ```
 
-The reader supports CSV, JSONL/NDJSON, and top-level JSON arrays, with optional gzip or bzip2 compression. The official ZIP archive should be extracted first.
+Then repeat the frozen input for `learner` and `strict`.
 
-The script processes records in batches so the full COMISET file is not loaded into memory.
+The reader processes records in bounded batches, so the full COMISET file is not loaded into memory.
+
+## Metric interpretation
+
+The COMISET evaluator intentionally reports two aggregate views plus per-technique metrics.
+
+### Supported-scope binary metrics
+
+An event is positive when its reference labels contain at least one TriageBloom-supported technique. A predicted event is positive when TriageBloom surfaces at least one supported technique. These metrics answer whether TriageBloom surfaced a supported malicious behaviour at the event level.
+
+They do **not** prove that the exact ATT&CK technique agreed.
+
+### Exact-technique micro metrics
+
+Every `(event, supported-technique)` pair is scored independently. If the reference says `T1218.005` but TriageBloom predicts `T1218.011`, the binary view sees that both sides identified supported suspicious behaviour, while exact-technique scoring records a false negative for `T1218.005` and a false positive for `T1218.011`.
+
+This distinction prevents a misleading headline score from hiding ATT&CK-mapping disagreement.
+
+### Per-technique metrics
+
+The paper should report per-technique precision, recall and F1 alongside the aggregate views. Techniques with too few positive reference events should be marked as sparse instead of interpreted aggressively.
 
 ## LANL workflow
 
@@ -112,21 +190,20 @@ The LANL source-computer identifier is placed in TriageBloom's generic source en
 
 For the supported ATT&CK intersection, report:
 
-- true positives;
-- false positives;
-- false negatives;
-- true negatives where the evaluation unit is defensible;
-- precision;
-- recall;
-- F1 score;
-- false-positive rate;
-- per-technique results.
+- binary event-level TP, FP, FN and TN;
+- exact-technique micro metrics;
+- per-technique TP, FP, FN and TN;
+- precision, recall and F1;
+- false-positive rate where the negative unit is defensible;
+- findings per 10,000 events.
 
-The final paper should report both the binary supported-scope result and per-technique results. A single aggregate score without the per-technique table can hide major differences between rules.
+A single aggregate score without per-technique results is not sufficient.
 
-### E2 — real-environment false-positive behaviour
+### E2 — real-environment alert behaviour
 
-Run the same frozen process rules on an agreed COMISET real-environment subset. Report findings per 10,000 events in addition to false-positive metrics. Do not tune thresholds on the final test subset.
+Run the same frozen process rules on an agreed COMISET real-environment subset. Report findings per 10,000 events and manually inspect a preregistered sample of findings before using the term `false positive`. An unlabeled real-environment event is not automatically proven benign.
+
+This wording is important: absence of a COMISET attack-reference label is evidence for the dataset's labelled-normal setting, not a universal guarantee that the event is harmless.
 
 ### E3 — authentication stress check
 
@@ -167,8 +244,9 @@ Before final scoring:
 3. Do not change a detection threshold because a final-test event failed to trigger.
 4. Record every excluded technique or event class with a reason.
 5. Keep synthetic regression fixtures separate from external evaluation results.
-6. Preserve source dataset version, checksums, extraction commands, and sampling seeds.
+6. Preserve source dataset version, checksums, archive member, commands, and sampling seeds.
 7. Report negative results.
+8. Keep a clear distinction between absence of a reference label and independently established benign ground truth.
 
 ## Result storage
 
@@ -188,9 +266,10 @@ Record:
 
 - dataset title and DOI/source;
 - dataset version/date;
-- source-file checksum;
+- source-file MD5 and SHA-256;
+- selected archive member;
 - TriageBloom commit SHA;
-- command line;
+- exact command line;
 - profile and thresholds;
 - inclusion/exclusion rules;
 - event count;
@@ -201,4 +280,4 @@ Record:
 
 ## Current status
 
-The streaming COMISET adapter, supported-technique evaluator, LANL red-team-window extractor, LANL authentication evaluator, and unit tests are implemented on the research branch. Full dataset results are intentionally not claimed until the official datasets are downloaded and the frozen evaluation commands are executed.
+The streaming COMISET adapter, direct-ZIP support, archive fingerprinting, schema/scope audit, supported-technique evaluator, LANL red-team-window extractor, LANL authentication evaluator, and unit tests are implemented. Full dataset results are intentionally not claimed until the official datasets are downloaded, verified, audited, and executed against a frozen evaluation commit/configuration.
