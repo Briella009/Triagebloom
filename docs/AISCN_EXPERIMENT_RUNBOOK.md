@@ -158,22 +158,55 @@ Follow the commands in `docs/RESEARCH_EVALUATION.md` to extract fixed windows ar
 
 Do not select a public attack recording merely because it contains password spraying and PowerShell. The recording must contain the exact observable sequence required by the rule.
 
-Before evaluating an OTRF/Mordor recording, record a small eligibility table with each required component marked present/absent. Only then decide whether the recording can be used for the correlation ablation.
+Before evaluating an OTRF/Mordor recording, record a small eligibility table with each required component marked present/absent. Only then decide whether the recording can be used for the correlation ablation. The exact scoring method is documented in `docs/CORRELATION_ABLATION.md`.
 
 ## Performance experiment
 
-Performance numbers used in the manuscript should be produced on one documented machine with a frozen commit.
+Use the isolated benchmark harness rather than hand-timing commands:
 
-For each event-count target:
+```bash
+python scripts/research_performance_benchmark.py benchmark \
+  evaluation/external/Comiset23_Lab_Environment_Dataset.zip \
+  --member '<DATA_MEMBER>' \
+  --profile balanced \
+  --sizes 10000 100000 1000000 \
+  --warmups 1 \
+  --repetitions 5 \
+  --output evaluation/external/performance-balanced.json
+```
 
-- perform one warm-up run;
-- perform at least five measured runs;
-- report the median and interquartile range;
-- record events/second;
-- record total-process RSS with an OS-level measurement utility;
-- preserve the command, Python version, OS, processor and RAM.
+Each measured repetition runs in a fresh child process. This prevents a previous larger run from contaminating the peak-memory high-water mark of a later smaller run.
 
-Do not compare hardware cost with another research system unless that system is actually measured under a defensibly comparable setup.
+The benchmark separately records:
+
+- ingest/adaptation time;
+- detection time;
+- end-to-end time;
+- detection and end-to-end throughput;
+- peak process RSS/working set;
+- exact git commit and environment information.
+
+For each event-count target, perform one warm-up and at least five measured runs. Report median and interquartile range. See `docs/PERFORMANCE_BENCHMARK.md` for measurement semantics and claim boundaries.
+
+Do not compare hardware cost or speed with another system unless that system is actually measured under a defensibly comparable setup.
+
+## Compile manuscript tables from measured JSON
+
+Do not manually retype experiment numbers into a draft while results are still changing. Generate a measured-results bundle from the accepted JSON outputs:
+
+```bash
+python scripts/research_results_bundle.py \
+  --comiset-lab evaluation/external/comiset-lab-profile-matrix.json \
+  --comiset-real evaluation/external/comiset-real-profile-matrix.json \
+  --performance evaluation/external/performance-balanced.json \
+  --correlation evaluation/external/correlation-ablation-balanced.json \
+  --lanl evaluation/external/lanl-balanced.json \
+  --output evaluation/external/aiscn-results-bundle.md
+```
+
+The generator keeps binary supported-scope and exact-technique metrics separate, carries the real-environment and correlation interpretation limits into the output, and flags missing core provenance instead of inventing values. `NR` means `not recorded`.
+
+The generated Markdown is a transfer aid for the private manuscript. It is not itself the submitted paper.
 
 ## Result acceptance checklist
 
