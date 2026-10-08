@@ -2,6 +2,21 @@
 
 All notable project changes are recorded here.
 
+## Unreleased - AISCN 2027 research track
+
+The product version remains **0.2.1**. The research infrastructure below is merged into `main`; it does not constitute a new product release.
+
+### Added
+
+- External-evaluation protocol and tooling for COMISET profile comparisons, LANL authentication checks, and sequence-correlation ablation, plus an isolated performance benchmark and a measured-results bundle generator. See the [research protocol](docs/RESEARCH_EVALUATION.md) and [experiment runbook](docs/AISCN_EXPERIMENT_RUNBOOK.md).
+- Phase 6 reproducible SVG figure generation, merged in [PR #9](https://github.com/Briella009/Triagebloom/pull/9) on 2026-09-10 (`d5bee49`): static architecture and `TB-CORR-001` sequence diagrams, with measured profile and throughput plots conditional on accepted result JSON. See [figure generation and claim boundaries](docs/AISCN_FIGURES.md).
+
+### Research status and claim boundaries
+
+- This is a **pre-results publication layer**; no external-dataset result is claimed.
+- Measured COMISET profile figures require the frozen external matrix accepted as final. Throughput figures require accepted isolated benchmark JSON with at least two measured event sizes and the documented machine, Python version, exact commit, event counts, and run procedure.
+- Static diagrams are not performance evidence. Synthetic regression results cannot substitute for external evaluation.
+
 ## 0.2.1 - 2026-09-09
 
 ### Fixed
