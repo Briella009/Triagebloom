@@ -218,14 +218,9 @@ Run:
 python scripts/evaluate_labelled.py
 ```
 
-The committed evaluation uses eight synthetic cases across seven evaluated rules. The current synthetic case set produces:
+The current extended suite contains 11 synthetic detection cases across 8 evaluated rules, plus a separate malformed-input and ingestion robustness set. CI recomputes the current synthetic metrics for each change.
 
-- precision: 1.0000
-- recall: 1.0000
-- F1 score: 1.0000
-- false-positive rate: 0.0000
-
-These values are **not real-world SOC accuracy claims**. The cases are deliberately constructed to verify rule behaviour. See [`docs/EVALUATION.md`](docs/EVALUATION.md) for methodology and limitations.
+The historical v0.2.0 eight-case preparation result is preserved in `evaluation/results-v0.2.0.json`; it is **not a real-world SOC accuracy claim**. See [`docs/EVALUATION.md`](docs/EVALUATION.md) for methodology and limitations.
 
 ## Automated tests and coverage
 
@@ -309,6 +304,20 @@ Microsoft schema references and MITRE ATT&CK mappings used by the project are li
 ## Contributing
 
 Issues, detection ideas, sanitised schema examples, tests, and documentation improvements are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
+
+## Independent evaluation and evidence
+
+For independent technical review, use:
+
+- [review guide](docs/INDEPENDENT_REVIEW_GUIDE.md)
+- [reviewer feedback form](docs/REVIEWER_FEEDBACK_FORM.md)
+- [external review evidence checklist](docs/EXTERNAL_REVIEW_EVIDENCE_CHECKLIST.md)
+
+For a claim-disciplined project assessment, see:
+
+- [repository audit and evidence-gap assessment](docs/REPOSITORY_AUDIT_2026-10-23.md)
+- [comparative novelty review](docs/NOVELTY_REVIEW.md)
+- [factual UK Global Talent evidence case study](docs/GLOBAL_TALENT_EVIDENCE_CASE_STUDY.md)
 
 ## Roadmap
 
