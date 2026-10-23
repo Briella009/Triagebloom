@@ -1,0 +1,657 @@
+{
+  "case_definition": "any TriageBloom finding versus researcher-labelled review warranted",
+  "labelled_cases": 18,
+  "not_independent_or_production_performance": true,
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "python": "3.12.15",
+  "results": [
+    {
+      "case_f1": 0.7272727272727274,
+      "case_false_positive_rate": 0.5555555555555556,
+      "case_precision": 0.6153846153846154,
+      "case_recall": 0.8888888888888888,
+      "cases": [
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B01",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000228
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B02",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-002"
+          ],
+          "seconds": 0.00016
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B03",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-001"
+          ],
+          "seconds": 0.00015
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B04",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000279
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B05",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-002"
+          ],
+          "seconds": 0.000722
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B06",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-001"
+          ],
+          "seconds": 0.000413
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A07",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-001"
+          ],
+          "seconds": 0.000551
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A08",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-001"
+          ],
+          "seconds": 0.000622
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A09",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-003"
+          ],
+          "seconds": 0.000552
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "A10",
+          "outcome": "FN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000531
+        },
+        {
+          "error": null,
+          "finding_count": 2,
+          "id": "A11",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-003",
+            "TB-AUTH-005"
+          ],
+          "seconds": 0.000494
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A12",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-001"
+          ],
+          "seconds": 0.000166
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B13",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.00012
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A14",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-002"
+          ],
+          "seconds": 0.000136
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B15",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000117
+        },
+        {
+          "error": null,
+          "finding_count": 3,
+          "id": "A16",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-003",
+            "TB-CORR-001",
+            "TB-PROC-001"
+          ],
+          "seconds": 0.000725
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A17",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-003"
+          ],
+          "seconds": 0.000581
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B18",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-002"
+          ],
+          "seconds": 0.000703
+        },
+        {
+          "error": "InputFormatError: Could not normalise input: row 1: A timestamp field is required for every event",
+          "finding_count": 0,
+          "id": "E19",
+          "outcome": "INVALID",
+          "predicted_review": null,
+          "rule_ids": [],
+          "seconds": 0.00005
+        }
+      ],
+      "confusion": {
+        "FN": 1,
+        "FP": 5,
+        "INVALID": 1,
+        "TN": 4,
+        "TP": 8
+      },
+      "profile": "learner"
+    },
+    {
+      "case_f1": 0.7000000000000001,
+      "case_false_positive_rate": 0.4444444444444444,
+      "case_precision": 0.6363636363636364,
+      "case_recall": 0.7777777777777778,
+      "cases": [
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B01",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000183
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B02",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-002"
+          ],
+          "seconds": 0.00014
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B03",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-001"
+          ],
+          "seconds": 0.000145
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B04",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000262
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B05",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-002"
+          ],
+          "seconds": 0.000673
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B06",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000365
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A07",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-001"
+          ],
+          "seconds": 0.000542
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "A08",
+          "outcome": "FN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000517
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A09",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-003"
+          ],
+          "seconds": 0.000524
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "A10",
+          "outcome": "FN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000506
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A11",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-005"
+          ],
+          "seconds": 0.000449
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A12",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-001"
+          ],
+          "seconds": 0.000151
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B13",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000117
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A14",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-002"
+          ],
+          "seconds": 0.000133
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B15",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000114
+        },
+        {
+          "error": null,
+          "finding_count": 3,
+          "id": "A16",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-003",
+            "TB-CORR-001",
+            "TB-PROC-001"
+          ],
+          "seconds": 0.000687
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A17",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-003"
+          ],
+          "seconds": 0.00059
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B18",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-AUTH-002"
+          ],
+          "seconds": 0.00071
+        },
+        {
+          "error": "InputFormatError: Could not normalise input: row 1: A timestamp field is required for every event",
+          "finding_count": 0,
+          "id": "E19",
+          "outcome": "INVALID",
+          "predicted_review": null,
+          "rule_ids": [],
+          "seconds": 0.000047
+        }
+      ],
+      "confusion": {
+        "FN": 2,
+        "FP": 4,
+        "INVALID": 1,
+        "TN": 5,
+        "TP": 7
+      },
+      "profile": "balanced"
+    },
+    {
+      "case_f1": 0.42857142857142855,
+      "case_false_positive_rate": 0.2222222222222222,
+      "case_precision": 0.6,
+      "case_recall": 0.3333333333333333,
+      "cases": [
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B01",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.00018
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B02",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-002"
+          ],
+          "seconds": 0.000139
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "B03",
+          "outcome": "FP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-001"
+          ],
+          "seconds": 0.000136
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B04",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000276
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B05",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000646
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B06",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000356
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "A07",
+          "outcome": "FN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000505
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "A08",
+          "outcome": "FN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000514
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "A09",
+          "outcome": "FN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000493
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "A10",
+          "outcome": "FN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000507
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "A11",
+          "outcome": "FN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000421
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A12",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-001"
+          ],
+          "seconds": 0.00014
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B13",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000114
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A14",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-002"
+          ],
+          "seconds": 0.000144
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B15",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.00012
+        },
+        {
+          "error": null,
+          "finding_count": 1,
+          "id": "A16",
+          "outcome": "TP",
+          "predicted_review": true,
+          "rule_ids": [
+            "TB-PROC-001"
+          ],
+          "seconds": 0.000622
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "A17",
+          "outcome": "FN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000508
+        },
+        {
+          "error": null,
+          "finding_count": 0,
+          "id": "B18",
+          "outcome": "TN",
+          "predicted_review": false,
+          "rule_ids": [],
+          "seconds": 0.000647
+        },
+        {
+          "error": "InputFormatError: Could not normalise input: row 1: A timestamp field is required for every event",
+          "finding_count": 0,
+          "id": "E19",
+          "outcome": "INVALID",
+          "predicted_review": null,
+          "rule_ids": [],
+          "seconds": 0.000056
+        }
+      ],
+      "confusion": {
+        "FN": 6,
+        "FP": 2,
+        "INVALID": 1,
+        "TN": 7,
+        "TP": 3
+      },
+      "profile": "strict"
+    }
+  ],
+  "scenario_count": 19,
+  "study_type": "researcher-authored adversarial semantic stress suite",
+  "provenance": {
+    "git_commit_tested": "6d017800031955eed807b6b4943b5b88cd437c70",
+    "source_branch": "research/stress-scenarios-20261022",
+    "github_actions_run_id": 39899296136,
+    "github_actions_url": "https://github.com/Briella009/Triagebloom/actions/runs/39899296136",
+    "test_job_id": 120236883669,
+    "checked_across_python": [
+      "3.10.22",
+      "3.11.17",
+      "3.12.15"
+    ],
+    "date_utc": "2026-10-23",
+    "test_suite": "tests/test_research_stress_scenarios.py"
+  },
+  "interpretation_guardrails": [
+    "Author-designed cases, not held-out independently labelled data",
+    "A positive finding does not imply confirmed compromise",
+    "The nine benign vs nine suspicious labels were assigned by the test author and are debatable in some administrative scenarios",
+    "Small purposive sample; profile ordering not representative of operational prevalence",
+    "One malformed input excluded from binary denominator",
+    "No speed or analyst productivity comparison was conducted"
+  ]
+}
