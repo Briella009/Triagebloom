@@ -25,6 +25,20 @@ jobs:
           coverage run --source=src/triagebloom -m unittest discover -s tests -v
           coverage report --fail-under=80
 
+  synthetic-evaluation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install project
+        run: python -m pip install -e .
+      - name: Run labelled synthetic evaluation
+        run: |
+          python scripts/evaluate_labelled.py --output /tmp/triagebloom-synthetic-evaluation.json
+          python -m json.tool /tmp/triagebloom-synthetic-evaluation.json > /dev/null
+
   ui-smoke:
     runs-on: ubuntu-latest
     steps:
