@@ -16,6 +16,8 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install inspector requirements
-        run: python -m pip install --disable-pip-version-check pandas pyarrow
+        run: python -m pip install --disable-pip-version-check numpy pandas pyarrow scikit-learn
       - name: Inspect verified Zenodo dataset
         run: python research/icassp2027/download_inspect.py
+      - name: Execute reproducible coverage evaluation
+        run: python research/icassp2027/run_experiment.py
