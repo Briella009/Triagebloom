@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "description": "Synthetic ingestion and robustness cases for TriageBloom. These cases are not detection-accuracy samples and contain no real user, employer, or client data.",
+  "cases": [
+    {
+      "case_id": "malformed-json",
+      "filename": "events.json",
+      "payload": "{\"events\":[",
+      "expected": "error",
+      "error_contains": "Invalid JSON on line 1"
+    },
+    {
+      "case_id": "unsupported-extension",
+      "filename": "events.txt",
+      "payload": "timestamp,user\n2026-08-20T10:00:00Z,user@example.org\n",
+      "expected": "error",
+      "error_contains": "Supported input formats"
+    },
+    {
+      "case_id": "invalid-timestamp",
+      "filename": "events.json",
+      "payload": "[{\"timestamp\":\"not-a-time\",\"event_type\":\"SignInSuccess\",\"outcome\":\"Success\",\"user\":\"u@example.org\"}]",
+      "expected": "error",
+      "error_contains": "Unsupported timestamp format"
+    },
+    {
+      "case_id": "missing-timestamp",
+      "filename": "events.json",
+      "payload": "[{\"event_type\":\"SignInSuccess\",\"outcome\":\"Success\",\"user\":\"u@example.org\"}]",
+      "expected": "error",
+      "error_contains": "A timestamp field is required"
+    },
+    {
+      "case_id": "empty-input",
+      "filename": "events.json",
+      "payload": "",
+      "expected": "event_count",
+      "event_count": 0
+    },
+    {
+      "case_id": "valid-jsonl-edge",
+      "filename": "events.jsonl",
+      "payload": "{\"timestamp\":\"2026-08-20T07:00:00Z\",\"event_type\":\"SignInSuccess\",\"outcome\":\"Success\",\"user\":\"edge@example.org\"}\n",
+      "expected": "event_count",
+      "event_count": 1
+    }
+  ]
+}
