@@ -1,0 +1,21 @@
+name: ICASSP 2027 public dataset inspection
+on:
+  push:
+    branches:
+      - research/icassp-coverage-2027
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-public-dataset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install inspector requirements
+        run: python -m pip install --disable-pip-version-check pandas pyarrow
+      - name: Inspect verified Zenodo dataset
+        run: python research/icassp2027/download_inspect.py
