@@ -11,6 +11,18 @@ Thank you for helping improve the project.
 - Documentation and accessibility improvements
 - Performance measurements on large synthetic datasets
 
+## Starter pull requests
+
+If you want a small, useful first contribution, choose one of these:
+
+- add one additional field alias to an existing normaliser and cover it with a test;
+- add a benign synthetic fixture that should **not** trigger a detection;
+- improve one rule's investigation guidance or documentation without changing its detection logic;
+- add an accessibility or usability improvement to the Streamlit interface;
+- add a reproducible benchmark run on synthetic data with machine/Python/version details.
+
+For a first PR, prefer one focused change that can be reviewed independently.
+
 ## Development setup
 
 ```bash
