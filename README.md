@@ -9,6 +9,14 @@
 
 **[Try the live demo](https://triagebloom.streamlit.app)** · [Latest release](https://github.com/Briella009/Triagebloom/releases/tag/v0.2.1) · [Quick start](#quick-start) · [Evaluation](docs/EVALUATION.md) · [Contributing](CONTRIBUTING.md)
 
+<p align="center">
+  <a href="https://triagebloom.streamlit.app">
+    <img src="assets/screenshots/triagebloom-demo.gif" alt="TriageBloom live demo showing the synthetic combined incident chain, prioritised findings, and analyst detail" width="100%" />
+  </a>
+</p>
+
+<p align="center"><em>Real v0.2.1 UI captured from the repository's Streamlit app using bundled synthetic demo data.</em></p>
+
 TriageBloom converts exported CSV or JSON security events into analyst-ready HTML and JSON reports. It normalises common Microsoft Entra ID, Microsoft Defender, Windows, and generic fields, detects suspicious authentication and process behaviour, correlates related events into incident chains, maps findings to MITRE ATT&CK, and explains the evidence behind each rule.
 
 The core engine remains dependency-free and can run entirely on an analyst's computer. An optional Streamlit interface provides a browser workflow for demos and authorised non-confidential datasets.
