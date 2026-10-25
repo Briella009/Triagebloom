@@ -2,6 +2,13 @@
 
 **Explainable security log triage with Microsoft security context, incident correlation, a privacy-aware web interface, and reproducible evaluation.**
 
+[![Tests](https://github.com/Briella009/Triagebloom/actions/workflows/tests.yml/badge.svg)](https://github.com/Briella009/Triagebloom/actions/workflows/tests.yml)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://triagebloom.streamlit.app)
+![Version](https://img.shields.io/badge/version-v0.2.1-516b78)
+[![License](https://img.shields.io/github/license/Briella009/Triagebloom)](LICENSE)
+
+**[Try the live demo](https://triagebloom.streamlit.app)** · [Quick start](#quick-start) · [Evaluation](docs/EVALUATION.md) · [Contributing](CONTRIBUTING.md)
+
 TriageBloom converts exported CSV or JSON security events into analyst-ready HTML and JSON reports. It normalises common Microsoft Entra ID, Microsoft Defender, Windows, and generic fields, detects suspicious authentication and process behaviour, correlates related events into incident chains, maps findings to MITRE ATT&CK, and explains the evidence behind each rule.
 
 The core engine remains dependency-free and can run entirely on an analyst's computer. An optional Streamlit interface provides a browser workflow for demos and authorised non-confidential datasets.
@@ -11,6 +18,18 @@ The core engine remains dependency-free and can run entirely on an analyst's com
 **Live demo:** https://triagebloom.streamlit.app
 
 > The public demo is for synthetic, redacted, or explicitly authorised non-confidential data only. Use the local CLI or local Streamlit app for sensitive investigations.
+
+## Try TriageBloom in 60 seconds
+
+1. Open the **[live demo](https://triagebloom.streamlit.app)**.
+2. Leave the detection profile on **balanced**.
+3. Choose **Demo data** → **Combined incident chain**.
+4. Click **Run analysis**.
+5. Expand the critical correlation finding to inspect evidence IDs, entities, ATT&CK context, and investigation guidance.
+
+Prefer local execution? Jump to the [Quick start](#quick-start).
+
+If TriageBloom is useful to your work, you can **star the repository to follow releases**, **fork it to experiment with rules/adapters**, or send a focused pull request through the [contribution guide](CONTRIBUTING.md).
 
 ## What changed in 0.2.0
 
@@ -237,7 +256,7 @@ coverage run --source=src/triagebloom -m unittest discover -s tests -v
 coverage report --fail-under=80
 ```
 
-The v0.2.1 validation run passed 36 automated tests and reached 90% statement coverage across the core package.
+The current validation suite passes **70 automated tests** and reaches **93% statement coverage** across the core package, with CI coverage on Python 3.10, 3.11, and 3.12 plus a Streamlit smoke test.
 
 ## Synthetic performance benchmark
 
