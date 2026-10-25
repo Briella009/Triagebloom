@@ -4,10 +4,10 @@
 
 [![Tests](https://github.com/Briella009/Triagebloom/actions/workflows/tests.yml/badge.svg)](https://github.com/Briella009/Triagebloom/actions/workflows/tests.yml)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://triagebloom.streamlit.app)
-![Version](https://img.shields.io/badge/version-v0.2.1-516b78)
+[![Release](https://img.shields.io/github/v/release/Briella009/Triagebloom)](https://github.com/Briella009/Triagebloom/releases/tag/v0.2.1)
 [![License](https://img.shields.io/github/license/Briella009/Triagebloom)](LICENSE)
 
-**[Try the live demo](https://triagebloom.streamlit.app)** · [Quick start](#quick-start) · [Evaluation](docs/EVALUATION.md) · [Contributing](CONTRIBUTING.md)
+**[Try the live demo](https://triagebloom.streamlit.app)** · [Latest release](https://github.com/Briella009/Triagebloom/releases/tag/v0.2.1) · [Quick start](#quick-start) · [Evaluation](docs/EVALUATION.md) · [Contributing](CONTRIBUTING.md)
 
 TriageBloom converts exported CSV or JSON security events into analyst-ready HTML and JSON reports. It normalises common Microsoft Entra ID, Microsoft Defender, Windows, and generic fields, detects suspicious authentication and process behaviour, correlates related events into incident chains, maps findings to MITRE ATT&CK, and explains the evidence behind each rule.
 
