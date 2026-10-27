@@ -334,17 +334,18 @@ Issues, detection ideas, sanitised schema examples, tests, and documentation imp
 
 ## Independent evaluation and evidence
 
-For independent technical review, use:
+The repository distinguishes verification infrastructure from completed external evidence:
 
-- [review guide](docs/INDEPENDENT_REVIEW_GUIDE.md)
-- [reviewer feedback form](docs/REVIEWER_FEEDBACK_FORM.md)
-- [external review evidence checklist](docs/EXTERNAL_REVIEW_EVIDENCE_CHECKLIST.md)
+| Evidence type | Current repository evidence | Interpretation |
+|---|---|---|
+| **Automated tests and synthetic regression evaluation** | [GitHub Actions](.github/workflows/tests.yml), [`tests/`](tests/), [`scripts/evaluate_labelled.py`](scripts/evaluate_labelled.py), and the preserved historical [`evaluation/results-v0.2.0.json`](evaluation/results-v0.2.0.json) | These are software-verification and synthetic regression assets. They do **not** estimate production SOC accuracy. |
+| **External-dataset evaluation infrastructure** | [`docs/RESEARCH_EVALUATION.md`](docs/RESEARCH_EVALUATION.md), [`docs/AISCN_EXPERIMENT_RUNBOOK.md`](docs/AISCN_EXPERIMENT_RUNBOOK.md), [`evaluation/aiscn2027_protocol.json`](evaluation/aiscn2027_protocol.json), COMISET/LANL adapters and related research tests | The infrastructure is implemented and tested, with claim boundaries and frozen-run requirements documented. |
+| **Completed external-dataset results** | None committed on `main` as of 27 October 2026. The machine-readable protocol remains `pre-results`. | Do not claim external-dataset accuracy, production validation, or comparative superiority until a documented run is completed and published with provenance. |
+| **Independently executed practitioner reviews** | No completed practitioner review is evidenced in the repository. Issues [#12](https://github.com/Briella009/Triagebloom/issues/12), [#13](https://github.com/Briella009/Triagebloom/issues/13), [#14](https://github.com/Briella009/Triagebloom/issues/14), and [#15](https://github.com/Briella009/Triagebloom/issues/15) are maintainer-created review requests with no reviewer responses. | Invitations are not completed reviews and are not presented as validation or adoption evidence. |
 
-For a claim-disciplined project assessment, see:
+For future independent technical review, use the [review guide](docs/INDEPENDENT_REVIEW_GUIDE.md), [reviewer feedback form](docs/REVIEWER_FEEDBACK_FORM.md), and [external review evidence checklist](docs/EXTERNAL_REVIEW_EVIDENCE_CHECKLIST.md).
 
-- [repository audit and evidence-gap assessment](docs/REPOSITORY_AUDIT_2026-10-23.md)
-- [comparative novelty review](docs/NOVELTY_REVIEW.md)
-- [factual UK Global Talent evidence case study](docs/GLOBAL_TALENT_EVIDENCE_CASE_STUDY.md)
+For a claim-disciplined project assessment, see the [repository audit and evidence-gap assessment](docs/REPOSITORY_AUDIT_2026-10-23.md), [comparative novelty review](docs/NOVELTY_REVIEW.md), and [factual UK Global Talent evidence case study](docs/GLOBAL_TALENT_EVIDENCE_CASE_STUDY.md).
 
 ## Roadmap
 
@@ -357,6 +358,15 @@ The core 0.2.0 engineering milestone is complete. The next priority is **externa
 - stable 1.0 release after validation
 
 See [`ROADMAP.md`](ROADMAP.md).
+
+## Author and maintainer
+
+**Blessing Ezeobioha** — project maintainer.
+
+- GitHub: [@Briella009](https://github.com/Briella009)
+- ORCID: [0009-0005-9972-9380](https://orcid.org/0009-0005-9972-9380)
+
+Contributions remain attributed to their original authors through Git history and pull requests; this maintainer attribution does not claim sole authorship of every component.
 
 ## Licence
 
