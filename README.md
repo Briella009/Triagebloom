@@ -324,6 +324,12 @@ Analyse only data you own or are authorised to handle. TriageBloom does not scan
 - allow-lists can hide malicious activity if configured carelessly
 - upstream Defender alerts are normalised for context rather than duplicated as TriageBloom alerts
 
+## Related publication
+
+**[Explainable AI for Security Operations: Improving Cyber Threat Intelligence Reporting and Visibility Across African Organizations](https://www.scimetech.com/issues/vol2/issue1/V2I1A24.html)** — Blessing N. Ezeobioha, *Sciences Methods and Technologies International Journal (SciMeTech)*, 2(1), 2026 (presented at AISEC 2026).
+
+The paper discusses explainable, evidence-linked cyber threat intelligence reporting for African organisations, a research theme also reflected in TriageBloom's analyst-readable findings and traceability design. This is a **related publication**, not a claim that the paper evaluated, used, or validated TriageBloom.
+
 ## Technical references
 
 Microsoft schema references and MITRE ATT&CK mappings used by the project are listed in [`docs/REFERENCES.md`](docs/REFERENCES.md). Mapping and score-semantics notes are in [`docs/ATTACK_MAPPING_NOTES.md`](docs/ATTACK_MAPPING_NOTES.md).
